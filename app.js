@@ -78,6 +78,8 @@
   const corrente = () => schede.find((s) => s.id === tab) || schede[0];
   const ordinate = () => [...sessioni].sort((a, b) => String(b.data).localeCompare(String(a.data)));
   const chiave = (i, ex) => i + '|' + ex.nome;
+  // Stesso esercizio anche se rinominato: "alias" in schede.json elenca i nomi precedenti.
+  const stessoEsercizio = (x, ex) => x.nome === ex.nome || (Array.isArray(ex.alias) && ex.alias.includes(x.nome));
   const nSerie = (ex) => Math.max(1, parseInt(ex.serie, 10) || 1);
   const oggi = () => dataCsv(new Date().toISOString()).slice(0, 10);
   const oraBreve = (iso) => new Date(iso).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
@@ -124,7 +126,7 @@
     const escludi = inCorso(scheda);
     for (const s of ordinate()) {
       if (s.scheda !== scheda.id || s.id === escludi || !Array.isArray(s.esercizi)) continue;
-      const e = s.esercizi.find((x) => x.nome === ex.nome);
+      const e = s.esercizi.find((x) => stessoEsercizio(x, ex));
       if (e && Array.isArray(e.serie) && e.serie.length) return { data: s.data, serie: e.serie };
     }
     const kg = Array.isArray(ex.ultimo) ? ex.ultimo : [];
@@ -159,7 +161,7 @@
     const escludi = inCorso(scheda);
     for (const s of ordinate()) {
       if (s.scheda !== scheda.id || s.id === escludi || !Array.isArray(s.esercizi)) continue;
-      const e = s.esercizi.find((x) => x.nome === ex.nome);
+      const e = s.esercizi.find((x) => stessoEsercizio(x, ex));
       const r = e && Array.isArray(e.serie) ? e.serie.find((x) => x.n === j + 1) : null;
       if (r) return r;
     }

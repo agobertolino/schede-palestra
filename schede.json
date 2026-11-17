@@ -18,7 +18,7 @@
           ]
         },
         {
-          "nome": "Panca inclinata manubri",
+          "nome": "Panca inclinata con manubri",
           "serie": 4,
           "reps": "2x7-9 + 1x10-12",
           "nota": "",
@@ -27,41 +27,53 @@
             28,
             28,
             22
+          ],
+          "alias": [
+            "Panca inclinata manubri"
           ]
         },
         {
-          "nome": "Pec fly",
+          "nome": "Pec deck",
           "serie": 2,
           "reps": "8-12",
           "nota": "fermo 2\" in allungamento",
           "ultimo": [
             40,
             45
+          ],
+          "alias": [
+            "Pec fly"
           ]
         },
         {
-          "nome": "Rematore macchina/bilanciere",
+          "nome": "Rematore alla macchina",
           "serie": 3,
           "reps": "8-10",
-          "nota": "",
+          "nota": "poi si passa al bilanciere",
           "ultimo": [
             65,
             65,
             65
+          ],
+          "alias": [
+            "Rematore macchina/bilanciere"
           ]
         },
         {
-          "nome": "Pull down",
+          "nome": "Pulldown a braccia tese",
           "serie": 2,
           "reps": "10-15",
           "nota": "",
           "ultimo": [
             20,
             20
+          ],
+          "alias": [
+            "Pull down"
           ]
         },
         {
-          "nome": "Alzate laterali su panca",
+          "nome": "Alzate laterali con manubri su panca",
           "serie": 3,
           "reps": "10-12",
           "nota": "",
@@ -69,20 +81,26 @@
             8,
             8,
             8
+          ],
+          "alias": [
+            "Alzate laterali su panca"
           ]
         },
         {
-          "nome": "Rear delt al cavo",
+          "nome": "Alzate posteriori al cavo",
           "serie": 2,
           "reps": "12",
           "nota": "",
           "ultimo": [
             5,
             6
+          ],
+          "alias": [
+            "Rear delt al cavo"
           ]
         },
         {
-          "nome": "Curl seduto",
+          "nome": "Curl con manubri da seduto",
           "serie": 3,
           "reps": "9-11",
           "nota": "pesanti",
@@ -90,10 +108,13 @@
             10,
             10,
             10
+          ],
+          "alias": [
+            "Curl seduto"
           ]
         },
         {
-          "nome": "Tricipiti singoli al cavo",
+          "nome": "Push down a un braccio al cavo",
           "serie": 3,
           "reps": "10",
           "nota": "",
@@ -101,6 +122,9 @@
             7.5,
             7.5,
             7.5
+          ],
+          "alias": [
+            "Tricipiti singoli al cavo"
           ]
         }
       ]
@@ -111,7 +135,7 @@
       "nota": "",
       "esercizi": [
         {
-          "nome": "Alzate laterali ai cavi su panca",
+          "nome": "Alzate laterali al cavo su panca",
           "serie": 3,
           "reps": "10-12",
           "nota": "",
@@ -119,10 +143,13 @@
             9,
             9,
             9
+          ],
+          "alias": [
+            "Alzate laterali ai cavi su panca"
           ]
         },
         {
-          "nome": "Panca piana bilanciere",
+          "nome": "Panca piana con bilanciere",
           "serie": 4,
           "reps": "2-3x5-8 + 1x9-11",
           "nota": "",
@@ -131,6 +158,9 @@
             60,
             60,
             50
+          ],
+          "alias": [
+            "Panca piana bilanciere"
           ]
         },
         {
@@ -145,13 +175,16 @@
           ]
         },
         {
-          "nome": "Iliac pull down",
+          "nome": "Iliac pulldown",
           "serie": 2,
           "reps": "10-12",
           "nota": "",
           "ultimo": [
             25,
             25
+          ],
+          "alias": [
+            "Iliac pull down"
           ]
         },
         {
@@ -166,63 +199,85 @@
           ]
         },
         {
-          "nome": "Croci basse da seduto",
+          "nome": "Croci ai cavi dal basso da seduto",
           "serie": 2,
           "reps": "12",
           "nota": "",
           "ultimo": [
             15,
             15
+          ],
+          "alias": [
+            "Croci basse da seduto"
           ]
         },
         {
-          "nome": "Pressa",
+          "nome": "Leg press",
           "serie": 2,
           "reps": "8",
           "nota": "RIR 3; togliere da martedì 24/11",
           "ultimo": [
             60,
             60
+          ],
+          "alias": [
+            "Pressa"
           ]
         },
         {
-          "nome": "Curl singolo su panca",
+          "nome": "Curl di concentrazione",
           "serie": 3,
-          "reps": "",
+          "reps": "8-12",
           "nota": "",
           "ultimo": [
             10,
             10,
             10
+          ],
+          "alias": [
+            "Curl singolo su panca"
           ]
         },
         {
-          "nome": "Tricipiti singoli al cavo",
+          "nome": "Push down a un braccio al cavo",
           "serie": 3,
-          "reps": "",
+          "reps": "8-12",
           "nota": "",
           "ultimo": [
             20,
             20,
             20
+          ],
+          "alias": [
+            "Tricipiti singoli al cavo"
           ]
         }
       ]
     },
     {
       "id": "gambe",
-      "nome": "Gambe",
-      "nota": "Versione gara. Sempre 2-3 ripetizioni di margine, mai a cedimento. Lun 23 = richiamo ridotto, poi niente gambe fino al 29.",
+      "nome": "Lower",
+      "nota": "Mobilità iniziale sottintesa. Versione gara. Sempre 2-3 ripetizioni di margine, mai a cedimento. Lun 23 = richiamo ridotto, poi niente gambe fino al 29.",
       "esercizi": [
         {
-          "nome": "Mobilità + barchetta + dead bug",
+          "nome": "Hollow body hold (barchetta)",
           "serie": 2,
-          "reps": "30\" / 12",
+          "reps": "30\"",
+          "nota": "tenuta isometrica",
+          "ultimo": [],
+          "alias": [
+            "Barchetta"
+          ]
+        },
+        {
+          "nome": "Dead bug",
+          "serie": 2,
+          "reps": "12 per lato",
           "nota": "",
           "ultimo": []
         },
         {
-          "nome": "Pressa",
+          "nome": "Leg press",
           "serie": 3,
           "reps": "8",
           "nota": "~110 kg, senza fermo. Richiamo 23/11: 2x8 a ~100",
@@ -230,6 +285,9 @@
             110,
             110,
             110
+          ],
+          "alias": [
+            "Pressa"
           ]
         },
         {
@@ -253,38 +311,50 @@
           ]
         },
         {
-          "nome": "RDL manubri",
+          "nome": "Stacco rumeno con manubri",
           "serie": 2,
           "reps": "8",
           "nota": "~40, senza fermo. Tolto nel richiamo",
           "ultimo": [
             40,
             40
+          ],
+          "alias": [
+            "RDL manubri"
           ]
         },
         {
-          "nome": "Polpacci in piedi",
+          "nome": "Calf raise in piedi",
           "serie": 3,
           "reps": "12",
           "nota": "2\" su, 2\" giù. Richiamo: 2x12",
-          "ultimo": []
+          "ultimo": [],
+          "alias": [
+            "Polpacci in piedi"
+          ]
         },
         {
-          "nome": "Polpacci da seduto (soleo)",
+          "nome": "Calf raise da seduto",
           "serie": 3,
           "reps": "15",
           "nota": "Richiamo: 2x15",
-          "ultimo": []
+          "ultimo": [],
+          "alias": [
+            "Polpacci da seduto (soleo)"
+          ]
         },
         {
-          "nome": "Sollevamento punte (tibiale)",
+          "nome": "Tibialis raise",
           "serie": 2,
           "reps": "15",
           "nota": "corpo libero",
-          "ultimo": []
+          "ultimo": [],
+          "alias": [
+            "Sollevamento punte (tibiale)"
+          ]
         },
         {
-          "nome": "Bicipiti seduto su panca",
+          "nome": "Curl con manubri da seduto",
           "serie": 3,
           "reps": "9-11",
           "nota": "",
@@ -292,10 +362,13 @@
             12,
             12,
             12
+          ],
+          "alias": [
+            "Bicipiti seduto su panca"
           ]
         },
         {
-          "nome": "Push down corda",
+          "nome": "Push down con corda",
           "serie": 3,
           "reps": "9-11",
           "nota": "",
@@ -303,6 +376,9 @@
             9.5,
             9.5,
             9.5
+          ],
+          "alias": [
+            "Push down corda"
           ]
         }
       ]
