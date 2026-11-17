@@ -79,6 +79,22 @@
   const ordinate = () => [...sessioni].sort((a, b) => String(b.data).localeCompare(String(a.data)));
   const chiave = (i, ex) => i + '|' + ex.nome;
   const nSerie = (ex) => Math.max(1, parseInt(ex.serie, 10) || 1);
+  const oggi = () => dataCsv(new Date().toISOString()).slice(0, 10);
+  const oraBreve = (iso) => new Date(iso).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+  // Seduta in corso per scheda: valida solo nel giorno in cui è iniziata.
+  // Il giorno dopo si riparte con una seduta nuova, precompilata dalla precedente.
+  function bozzaDi(id) {
+    let b = bozza[id];
+    if (!b || b.giorno !== oggi() || !b.esercizi || typeof b.esercizi !== 'object') {
+      b = bozza[id] = { giorno: oggi(), sedutaId: null, esercizi: {} };
+    }
+    return b;
+  }
+  const inCorso = (scheda) => {
+    const b = bozza[scheda.id];
+    return b && b.giorno === oggi() ? b.sedutaId : null;
+  };
 
   // ---------- Schede ----------
   function validaSchede(d) {
@@ -105,8 +121,9 @@
   // Valori dell'ultima volta: seduta più recente di questa scheda con quell'esercizio,
   // altrimenti i carichi "ultimo" di schede.json.
   function precedente(scheda, ex) {
+    const escludi = inCorso(scheda);
     for (const s of ordinate()) {
-      if (s.scheda !== scheda.id || !Array.isArray(s.esercizi)) continue;
+      if (s.scheda !== scheda.id || s.id === escludi || !Array.isArray(s.esercizi)) continue;
       const e = s.esercizi.find((x) => x.nome === ex.nome);
       if (e && Array.isArray(e.serie) && e.serie.length) return { data: s.data, serie: e.serie };
     }
@@ -139,8 +156,9 @@
 
   // Precompila la serie j con la seduta più recente che la contiene, altrimenti con schede.json.
   function precedenteSerie(scheda, ex, j) {
+    const escludi = inCorso(scheda);
     for (const s of ordinate()) {
-      if (s.scheda !== scheda.id || !Array.isArray(s.esercizi)) continue;
+      if (s.scheda !== scheda.id || s.id === escludi || !Array.isArray(s.esercizi)) continue;
       const e = s.esercizi.find((x) => x.nome === ex.nome);
       const r = e && Array.isArray(e.serie) ? e.serie.find((x) => x.n === j + 1) : null;
       if (r) return r;
@@ -151,10 +169,10 @@
   }
 
   function valore(scheda, ex, i, j) {
-    const b = bozza[scheda.id] && bozza[scheda.id][chiave(i, ex)];
-    if (b && b[j]) return { kg: b[j].kg ?? '', reps: b[j].reps ?? '', fatta: !!b[j].fatta };
+    const b = bozzaDi(scheda.id).esercizi[chiave(i, ex)];
+    if (b && b[j]) return { kg: b[j].kg ?? '', reps: b[j].reps ?? '', fatta: !!b[j].fatta, toccata: !!b[j].toccata };
     const p = precedenteSerie(scheda, ex, j);
-    return { kg: p ? fmtNum(num(p.kg)) : '', reps: p ? fmtNum(num(p.reps)) : '', fatta: false };
+    return { kg: p ? fmtNum(num(p.kg)) : '', reps: p ? fmtNum(num(p.reps)) : '', fatta: false, toccata: false };
   }
 
   // ---------- Render ----------
@@ -178,6 +196,7 @@
 
   function renderScheda(s) {
     let h = s.nota ? '<p class="nota-scheda">' + esc(s.nota) + '</p>' : '';
+    h += '<p id="stato" class="stato" role="status">' + esc(testoStato(s)) + '</p>';
     s.esercizi.forEach((ex, i) => {
       const prev = precedente(s, ex);
       h += '<article class="card" data-ex="' + i + '">' +
@@ -188,7 +207,7 @@
       for (let j = 0; j < nSerie(ex); j++) {
         const v = valore(s, ex, i, j);
         const lab = esc(ex.nome) + ', serie ' + (j + 1);
-        h += '<div class="serie' + (v.fatta ? ' fatta' : '') + '">' +
+        h += '<div class="serie' + (v.fatta ? ' fatta' : '') + '"' + (v.toccata ? ' data-toccata="1"' : '') + '>' +
           '<span class="n">' + (j + 1) + '</span>' +
           '<input type="text" inputmode="decimal" autocomplete="off" name="kg" placeholder="kg" aria-label="' + lab + ', kg" value="' + esc(v.kg) + '">' +
           '<input type="text" inputmode="decimal" autocomplete="off" name="reps" placeholder="reps" aria-label="' + lab + ', ripetizioni" value="' + esc(v.reps) + '">' +
@@ -197,7 +216,6 @@
       }
       h += '</article>';
     });
-    h += '<button type="button" id="btn-salva" class="btn-pri">Salva seduta</button>';
     main.innerHTML = h;
   }
 
@@ -238,60 +256,60 @@
     main.innerHTML = h;
   }
 
-  // ---------- Bozza (input in corso, sopravvive alla chiusura dell'app) ----------
+  // ---------- Salvataggio automatico ----------
+  function testoStato(s) {
+    const id = inCorso(s);
+    const x = id && sessioni.find((y) => y.id === id);
+    return x ? '✓ Salvato automaticamente alle ' + oraBreve(x.aggiornata || x.data)
+      : 'Salvataggio automatico: ogni modifica viene salvata';
+  }
+
   function salvaBozzaCard(card) {
     const s = corrente();
     const i = Number(card.dataset.ex);
     const ex = s.esercizi[i];
     if (!ex) return;
-    bozza[s.id] = bozza[s.id] || {};
-    bozza[s.id][chiave(i, ex)] = [...card.querySelectorAll('.serie')].map((r) => ({
+    bozzaDi(s.id).esercizi[chiave(i, ex)] = [...card.querySelectorAll('.serie')].map((r) => ({
       kg: r.querySelector('[name="kg"]').value,
       reps: r.querySelector('[name="reps"]').value,
-      fatta: r.classList.contains('fatta')
+      fatta: r.classList.contains('fatta'),
+      toccata: r.dataset.toccata === '1'
     }));
-    scrivi(K.bozza, bozza);
+    autosalva(s);
   }
 
-  // ---------- Salva seduta ----------
-  function salvaSeduta() {
-    const s = corrente();
-    const righe = [];
-    main.querySelectorAll('article.card').forEach((card) => {
-      const ex = s.esercizi[Number(card.dataset.ex)];
-      const serie = [...card.querySelectorAll('.serie')].map((r, j) => ({
-        n: j + 1,
-        kg: num(r.querySelector('[name="kg"]').value),
-        reps: num(r.querySelector('[name="reps"]').value),
-        fatta: r.classList.contains('fatta')
-      }));
-      righe.push({ nome: ex.nome, serie });
+  // Aggiorna (o crea) la seduta di oggi con le serie spuntate o modificate a mano.
+  function autosalva(s) {
+    const b = bozzaDi(s.id);
+    const esercizi = [];
+    s.esercizi.forEach((ex, i) => {
+      const righe = b.esercizi[chiave(i, ex)];
+      if (!Array.isArray(righe)) return;
+      const serie = righe
+        .map((r, j) => ({ n: j + 1, kg: num(r.kg), reps: num(r.reps), fatta: !!r.fatta, toccata: !!r.toccata }))
+        .filter((r) => r.fatta || (r.toccata && (r.kg !== null || r.reps !== null)))
+        .map((r) => ({ n: r.n, kg: r.kg, reps: r.reps }));
+      if (serie.length) esercizi.push({ nome: ex.nome, serie });
     });
-    const fatte = righe.reduce((t, e) => t + e.serie.filter((r) => r.fatta).length, 0);
-    let filtro = (r) => r.fatta;
-    if (fatte === 0) {
-      if (!confirm('Nessuna serie spuntata. Salvare comunque tutte le serie compilate?')) return;
-      filtro = (r) => r.kg !== null || r.reps !== null;
+    const ora = new Date().toISOString();
+    const idx = b.sedutaId ? sessioni.findIndex((x) => x.id === b.sedutaId) : -1;
+    if (!esercizi.length) {
+      if (idx >= 0) sessioni.splice(idx, 1);
+      b.sedutaId = null;
+    } else if (idx >= 0) {
+      sessioni[idx].esercizi = esercizi;
+      sessioni[idx].aggiornata = ora;
+    } else {
+      const seduta = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+        data: ora, aggiornata: ora, scheda: s.id, nomeScheda: s.nome, esercizi
+      };
+      sessioni.push(seduta);
+      b.sedutaId = seduta.id;
     }
-    const esercizi = righe
-      .map((e) => ({ nome: e.nome, serie: e.serie.filter(filtro).map((r) => ({ n: r.n, kg: r.kg, reps: r.reps })) }))
-      .filter((e) => e.serie.length);
-    if (!esercizi.length) { toast('Niente da salvare'); return; }
-    const seduta = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-      data: new Date().toISOString(),
-      scheda: s.id,
-      nomeScheda: s.nome,
-      esercizi
-    };
-    sessioni.push(seduta);
-    if (!scrivi(K.sessioni, sessioni)) { sessioni.pop(); return; }
-    delete bozza[s.id];
-    scrivi(K.bozza, bozza);
-    fermaTimer();
-    render();
-    window.scrollTo(0, 0);
-    toast('Seduta salvata ✓');
+    const ok = scrivi(K.sessioni, sessioni) && scrivi(K.bozza, bozza);
+    const el = $('#stato');
+    if (el) el.textContent = ok ? testoStato(s) : '⚠️ Salvataggio non riuscito';
   }
 
   // ---------- Timer di recupero ----------
@@ -424,7 +442,10 @@
   // ---------- Eventi ----------
   main.addEventListener('input', (e) => {
     const card = e.target.closest('article.card');
-    if (card && e.target.matches('input')) salvaBozzaCard(card);
+    if (card && e.target.matches('input')) {
+      e.target.closest('.serie').dataset.toccata = '1';
+      salvaBozzaCard(card);
+    }
   });
   main.addEventListener('focusin', (e) => {
     if (e.target.matches('.serie input')) setTimeout(() => { try { e.target.select(); } catch (x) { /* */ } }, 0);
@@ -439,8 +460,7 @@
       t.setAttribute('aria-pressed', String(fatta));
       salvaBozzaCard(t.closest('article.card'));
       if (fatta) avviaTimer();
-    } else if (t.id === 'btn-salva') salvaSeduta();
-    else if (t.classList.contains('voce')) { dettaglioId = t.dataset.id; vista = 'dettaglio'; render(); window.scrollTo(0, 0); }
+    } else if (t.classList.contains('voce')) { dettaglioId = t.dataset.id; vista = 'dettaglio'; render(); window.scrollTo(0, 0); }
     else if (t.id === 'btn-indietro') { vista = 'storico'; render(); }
     else if (t.id === 'btn-csv') copiaCsv();
     else if (t.id === 'btn-json') scaricaJson();
