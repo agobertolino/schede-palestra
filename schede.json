@@ -1,0 +1,311 @@
+{
+  "schede": [
+    {
+      "id": "upper",
+      "nome": "Upper",
+      "nota": "",
+      "esercizi": [
+        {
+          "nome": "Trazioni",
+          "serie": 3,
+          "reps": "6-10",
+          "nota": "poi zavorrate · ultima volta a corpo libero",
+          "ultimo": [],
+          "ultimoReps": [
+            8,
+            6,
+            7
+          ]
+        },
+        {
+          "nome": "Panca inclinata manubri",
+          "serie": 4,
+          "reps": "2x7-9 + 1x10-12",
+          "nota": "",
+          "ultimo": [
+            28,
+            28,
+            28,
+            22
+          ]
+        },
+        {
+          "nome": "Pec fly",
+          "serie": 2,
+          "reps": "8-12",
+          "nota": "fermo 2\" in allungamento",
+          "ultimo": [
+            40,
+            45
+          ]
+        },
+        {
+          "nome": "Rematore macchina/bilanciere",
+          "serie": 3,
+          "reps": "8-10",
+          "nota": "",
+          "ultimo": [
+            65,
+            65,
+            65
+          ]
+        },
+        {
+          "nome": "Pull down",
+          "serie": 2,
+          "reps": "10-15",
+          "nota": "",
+          "ultimo": [
+            20,
+            20
+          ]
+        },
+        {
+          "nome": "Alzate laterali su panca",
+          "serie": 3,
+          "reps": "10-12",
+          "nota": "",
+          "ultimo": [
+            8,
+            8,
+            8
+          ]
+        },
+        {
+          "nome": "Rear delt al cavo",
+          "serie": 2,
+          "reps": "12",
+          "nota": "",
+          "ultimo": [
+            5,
+            6
+          ]
+        },
+        {
+          "nome": "Curl seduto",
+          "serie": 3,
+          "reps": "9-11",
+          "nota": "pesanti",
+          "ultimo": [
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "nome": "Tricipiti singoli al cavo",
+          "serie": 3,
+          "reps": "10",
+          "nota": "",
+          "ultimo": [
+            7.5,
+            7.5,
+            7.5
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fullbody",
+      "nome": "Full body",
+      "nota": "",
+      "esercizi": [
+        {
+          "nome": "Alzate laterali ai cavi su panca",
+          "serie": 3,
+          "reps": "10-12",
+          "nota": "",
+          "ultimo": [
+            9,
+            9,
+            9
+          ]
+        },
+        {
+          "nome": "Panca piana bilanciere",
+          "serie": 4,
+          "reps": "2-3x5-8 + 1x9-11",
+          "nota": "",
+          "ultimo": [
+            55,
+            60,
+            60,
+            50
+          ]
+        },
+        {
+          "nome": "Lat machine presa neutra",
+          "serie": 3,
+          "reps": "2x7-9 + 1x10-12",
+          "nota": "",
+          "ultimo": [
+            70,
+            70,
+            60
+          ]
+        },
+        {
+          "nome": "Iliac pull down",
+          "serie": 2,
+          "reps": "10-12",
+          "nota": "",
+          "ultimo": [
+            25,
+            25
+          ]
+        },
+        {
+          "nome": "Shoulder press",
+          "serie": 3,
+          "reps": "2x7-9 + 1x10-12",
+          "nota": "dead stop ultima serie",
+          "ultimo": [
+            32.5,
+            32.5,
+            25
+          ]
+        },
+        {
+          "nome": "Croci basse da seduto",
+          "serie": 2,
+          "reps": "12",
+          "nota": "",
+          "ultimo": [
+            15,
+            15
+          ]
+        },
+        {
+          "nome": "Pressa",
+          "serie": 2,
+          "reps": "8",
+          "nota": "RIR 3; togliere da martedì 24/11",
+          "ultimo": [
+            60,
+            60
+          ]
+        },
+        {
+          "nome": "Curl singolo su panca",
+          "serie": 3,
+          "reps": "",
+          "nota": "",
+          "ultimo": [
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "nome": "Tricipiti singoli al cavo",
+          "serie": 3,
+          "reps": "",
+          "nota": "",
+          "ultimo": [
+            20,
+            20,
+            20
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gambe",
+      "nome": "Gambe",
+      "nota": "Versione gara. Sempre 2-3 ripetizioni di margine, mai a cedimento. Lun 23 = richiamo ridotto, poi niente gambe fino al 29.",
+      "esercizi": [
+        {
+          "nome": "Mobilità + barchetta + dead bug",
+          "serie": 2,
+          "reps": "30\" / 12",
+          "nota": "",
+          "ultimo": []
+        },
+        {
+          "nome": "Pressa",
+          "serie": 3,
+          "reps": "8",
+          "nota": "~110 kg, senza fermo. Richiamo 23/11: 2x8 a ~100",
+          "ultimo": [
+            110,
+            110,
+            110
+          ]
+        },
+        {
+          "nome": "Leg extension",
+          "serie": 2,
+          "reps": "10",
+          "nota": "~40. Tolta nel richiamo",
+          "ultimo": [
+            40,
+            40
+          ]
+        },
+        {
+          "nome": "Leg curl sdraiato",
+          "serie": 2,
+          "reps": "10",
+          "nota": "~35",
+          "ultimo": [
+            35,
+            35
+          ]
+        },
+        {
+          "nome": "RDL manubri",
+          "serie": 2,
+          "reps": "8",
+          "nota": "~40, senza fermo. Tolto nel richiamo",
+          "ultimo": [
+            40,
+            40
+          ]
+        },
+        {
+          "nome": "Polpacci in piedi",
+          "serie": 3,
+          "reps": "12",
+          "nota": "2\" su, 2\" giù. Richiamo: 2x12",
+          "ultimo": []
+        },
+        {
+          "nome": "Polpacci da seduto (soleo)",
+          "serie": 3,
+          "reps": "15",
+          "nota": "Richiamo: 2x15",
+          "ultimo": []
+        },
+        {
+          "nome": "Sollevamento punte (tibiale)",
+          "serie": 2,
+          "reps": "15",
+          "nota": "corpo libero",
+          "ultimo": []
+        },
+        {
+          "nome": "Bicipiti seduto su panca",
+          "serie": 3,
+          "reps": "9-11",
+          "nota": "",
+          "ultimo": [
+            12,
+            12,
+            12
+          ]
+        },
+        {
+          "nome": "Push down corda",
+          "serie": 3,
+          "reps": "9-11",
+          "nota": "",
+          "ultimo": [
+            9.5,
+            9.5,
+            9.5
+          ]
+        }
+      ]
+    }
+  ]
+}
