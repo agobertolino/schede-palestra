@@ -72,6 +72,9 @@ body.con-timer main { padding-bottom: calc(var(--tab-h) + var(--timer-h) + env(s
 .spunta { width: 56px; height: 44px; font-size: 20px; font-weight: 700; background: var(--input); border: 2px solid var(--bordo); color: var(--sub); }
 .serie.fatta .spunta { background: var(--ok); border-color: var(--ok); color: #fff; }
 .serie.fatta input { border-color: var(--ok); }
+.azioni-serie { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.azioni-serie button { padding: 0 14px; font-size: 14px; font-weight: 600; background: var(--input); color: var(--acc); border: 1px solid var(--bordo); }
+.azioni-serie button:disabled { opacity: .4; cursor: default; }
 
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;

@@ -201,12 +201,15 @@
     h += '<p id="stato" class="stato" role="status">' + esc(testoStato(s)) + '</p>';
     s.esercizi.forEach((ex, i) => {
       const prev = precedente(s, ex);
+      const righe = bozzaDi(s.id).esercizi[chiave(i, ex)];
+      const n = Array.isArray(righe) && righe.length ? righe.length : nSerie(ex);
+      const oggiSerie = n !== nSerie(ex) ? ' · oggi ' + n + ' serie' : '';
       h += '<article class="card" data-ex="' + i + '">' +
-        '<h2>' + esc(ex.nome) + '</h2><span class="schema">' + esc(schema(ex)) + '</span>' +
+        '<h2>' + esc(ex.nome) + '</h2><span class="schema">' + esc(schema(ex) + oggiSerie) + '</span>' +
         (ex.nota ? '<p class="nota">' + esc(ex.nota) + '</p>' : '') +
         '<p class="ultima">' + testoUltima(prev) + '</p>' +
         '<div class="serie-head" aria-hidden="true"><span>#</span><span>kg</span><span>reps</span><span>fatta</span></div>';
-      for (let j = 0; j < nSerie(ex); j++) {
+      for (let j = 0; j < n; j++) {
         const v = valore(s, ex, i, j);
         const lab = esc(ex.nome) + ', serie ' + (j + 1);
         h += '<div class="serie' + (v.fatta ? ' fatta' : '') + '"' + (v.toccata ? ' data-toccata="1"' : '') + '>' +
@@ -216,7 +219,10 @@
           '<button type="button" class="spunta" aria-pressed="' + v.fatta + '" aria-label="' + lab + ', fatta">✓</button>' +
           '</div>';
       }
-      h += '</article>';
+      h += '<div class="azioni-serie">' +
+        '<button type="button" class="meno-serie"' + (n <= 1 ? ' disabled' : '') + ' aria-label="' + esc(ex.nome) + ', togli una serie">− Serie</button>' +
+        '<button type="button" class="piu-serie" aria-label="' + esc(ex.nome) + ', aggiungi una serie">+ Serie</button>' +
+        '</div></article>';
     });
     main.innerHTML = h;
   }
@@ -278,6 +284,29 @@
       toccata: r.dataset.toccata === '1'
     }));
     autosalva(s);
+  }
+
+  // Aggiunge (d = 1) o toglie (d = -1) l'ultima serie di un esercizio, solo per la seduta di oggi.
+  function cambiaSerie(card, d) {
+    const s = corrente();
+    const i = Number(card.dataset.ex);
+    const ex = s.esercizi[i];
+    if (!ex) return;
+    salvaBozzaCard(card);
+    const righe = bozzaDi(s.id).esercizi[chiave(i, ex)];
+    if (!Array.isArray(righe)) return;
+    if (d > 0) {
+      const p = precedenteSerie(s, ex, righe.length);
+      const u = righe[righe.length - 1] || {};
+      righe.push(p ? { kg: fmtNum(num(p.kg)), reps: fmtNum(num(p.reps)), fatta: false, toccata: false }
+        : { kg: u.kg ?? '', reps: u.reps ?? '', fatta: false, toccata: false });
+    } else if (righe.length > 1) {
+      righe.pop();
+    } else return;
+    autosalva(s);
+    const y = window.scrollY;
+    renderScheda(s);
+    window.scrollTo(0, y);
   }
 
   // Aggiorna (o crea) la seduta di oggi con le serie spuntate o modificate a mano.
@@ -462,6 +491,8 @@
       t.setAttribute('aria-pressed', String(fatta));
       salvaBozzaCard(t.closest('article.card'));
       if (fatta) avviaTimer();
+    } else if (t.classList.contains('piu-serie') || t.classList.contains('meno-serie')) {
+      cambiaSerie(t.closest('article.card'), t.classList.contains('piu-serie') ? 1 : -1);
     } else if (t.classList.contains('voce')) { dettaglioId = t.dataset.id; vista = 'dettaglio'; render(); window.scrollTo(0, 0); }
     else if (t.id === 'btn-indietro') { vista = 'storico'; render(); }
     else if (t.id === 'btn-csv') copiaCsv();
