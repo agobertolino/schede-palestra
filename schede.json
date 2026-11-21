@@ -6,7 +6,7 @@
       "nota": "",
       "esercizi": [
         {
-          "nome": "Trazioni",
+          "nome": "Pull-ups",
           "serie": 3,
           "reps": "6-10",
           "nota": "poi zavorrate · ultima volta a corpo libero",
@@ -15,10 +15,13 @@
             8,
             6,
             7
+          ],
+          "alias": [
+            "Trazioni"
           ]
         },
         {
-          "nome": "Panca inclinata con manubri",
+          "nome": "Incline Dumbbell Press",
           "serie": 4,
           "reps": "2x7-9 + 1x10-12",
           "nota": "",
@@ -29,11 +32,12 @@
             22
           ],
           "alias": [
+            "Panca inclinata con manubri",
             "Panca inclinata manubri"
           ]
         },
         {
-          "nome": "Pec deck",
+          "nome": "Pec Deck Fly",
           "serie": 2,
           "reps": "8-12",
           "nota": "fermo 2\" in allungamento",
@@ -42,11 +46,12 @@
             45
           ],
           "alias": [
+            "Pec deck",
             "Pec fly"
           ]
         },
         {
-          "nome": "Rematore alla macchina",
+          "nome": "Machine Row",
           "serie": 3,
           "reps": "8-10",
           "nota": "poi si passa al bilanciere",
@@ -56,11 +61,12 @@
             65
           ],
           "alias": [
+            "Rematore alla macchina",
             "Rematore macchina/bilanciere"
           ]
         },
         {
-          "nome": "Pulldown a braccia tese",
+          "nome": "Straight-Arm Pulldown",
           "serie": 2,
           "reps": "10-15",
           "nota": "",
@@ -69,11 +75,12 @@
             20
           ],
           "alias": [
+            "Pulldown a braccia tese",
             "Pull down"
           ]
         },
         {
-          "nome": "Alzate laterali con manubri su panca",
+          "nome": "Chest-Supported Lateral Raise",
           "serie": 3,
           "reps": "10-12",
           "nota": "",
@@ -83,11 +90,12 @@
             8
           ],
           "alias": [
+            "Alzate laterali con manubri su panca",
             "Alzate laterali su panca"
           ]
         },
         {
-          "nome": "Alzate posteriori al cavo",
+          "nome": "Cable Rear Delt Fly",
           "serie": 2,
           "reps": "12",
           "nota": "",
@@ -96,11 +104,12 @@
             6
           ],
           "alias": [
+            "Alzate posteriori al cavo",
             "Rear delt al cavo"
           ]
         },
         {
-          "nome": "Curl con manubri da seduto",
+          "nome": "Seated Dumbbell Curl",
           "serie": 3,
           "reps": "9-11",
           "nota": "pesanti",
@@ -110,11 +119,12 @@
             10
           ],
           "alias": [
+            "Curl con manubri da seduto",
             "Curl seduto"
           ]
         },
         {
-          "nome": "Push down a un braccio al cavo",
+          "nome": "Single-Arm Cable Pushdown",
           "serie": 3,
           "reps": "10",
           "nota": "",
@@ -124,6 +134,7 @@
             7.5
           ],
           "alias": [
+            "Push down a un braccio al cavo",
             "Tricipiti singoli al cavo"
           ]
         }
@@ -135,7 +146,7 @@
       "nota": "",
       "esercizi": [
         {
-          "nome": "Alzate laterali al cavo su panca",
+          "nome": "Chest-Supported Cable Lateral Raise",
           "serie": 3,
           "reps": "10-12",
           "nota": "",
@@ -145,11 +156,12 @@
             9
           ],
           "alias": [
+            "Alzate laterali al cavo su panca",
             "Alzate laterali ai cavi su panca"
           ]
         },
         {
-          "nome": "Panca piana con bilanciere",
+          "nome": "Barbell Bench Press",
           "serie": 4,
           "reps": "2-3x5-8 + 1x9-11",
           "nota": "",
@@ -160,11 +172,12 @@
             50
           ],
           "alias": [
+            "Panca piana con bilanciere",
             "Panca piana bilanciere"
           ]
         },
         {
-          "nome": "Lat machine presa neutra",
+          "nome": "Neutral-Grip Lat Pulldown",
           "serie": 3,
           "reps": "2x7-9 + 1x10-12",
           "nota": "",
@@ -172,10 +185,13 @@
             70,
             70,
             60
+          ],
+          "alias": [
+            "Lat machine presa neutra"
           ]
         },
         {
-          "nome": "Iliac pulldown",
+          "nome": "Iliac Pulldown",
           "serie": 2,
           "reps": "10-12",
           "nota": "",
@@ -184,11 +200,12 @@
             25
           ],
           "alias": [
+            "Iliac pulldown",
             "Iliac pull down"
           ]
         },
         {
-          "nome": "Shoulder press",
+          "nome": "Shoulder Press",
           "serie": 3,
           "reps": "2x7-9 + 1x10-12",
           "nota": "dead stop ultima serie",
@@ -196,10 +213,13 @@
             32.5,
             32.5,
             25
+          ],
+          "alias": [
+            "Shoulder press"
           ]
         },
         {
-          "nome": "Croci ai cavi dal basso da seduto",
+          "nome": "Seated Low Cable Fly",
           "serie": 2,
           "reps": "12",
           "nota": "",
@@ -208,11 +228,12 @@
             15
           ],
           "alias": [
+            "Croci ai cavi dal basso da seduto",
             "Croci basse da seduto"
           ]
         },
         {
-          "nome": "Leg press",
+          "nome": "Leg Press",
           "serie": 2,
           "reps": "8",
           "nota": "RIR 3; togliere da martedì 24/11",
@@ -221,11 +242,12 @@
             60
           ],
           "alias": [
+            "Leg press",
             "Pressa"
           ]
         },
         {
-          "nome": "Curl di concentrazione",
+          "nome": "Concentration Curl",
           "serie": 3,
           "reps": "8-12",
           "nota": "",
@@ -235,11 +257,12 @@
             10
           ],
           "alias": [
+            "Curl di concentrazione",
             "Curl singolo su panca"
           ]
         },
         {
-          "nome": "Push down a un braccio al cavo",
+          "nome": "Single-Arm Cable Pushdown",
           "serie": 3,
           "reps": "8-12",
           "nota": "",
@@ -249,6 +272,7 @@
             20
           ],
           "alias": [
+            "Push down a un braccio al cavo",
             "Tricipiti singoli al cavo"
           ]
         }
@@ -260,24 +284,28 @@
       "nota": "Mobilità iniziale sottintesa. Versione gara. Sempre 2-3 ripetizioni di margine, mai a cedimento. Lun 23 = richiamo ridotto, poi niente gambe fino al 29.",
       "esercizi": [
         {
-          "nome": "Hollow body hold (barchetta)",
+          "nome": "Hollow Body Hold",
           "serie": 2,
           "reps": "30\"",
           "nota": "tenuta isometrica",
           "ultimo": [],
           "alias": [
+            "Hollow body hold (barchetta)",
             "Barchetta"
           ]
         },
         {
-          "nome": "Dead bug",
+          "nome": "Dead Bug",
           "serie": 2,
           "reps": "12 per lato",
           "nota": "",
-          "ultimo": []
+          "ultimo": [],
+          "alias": [
+            "Dead bug"
+          ]
         },
         {
-          "nome": "Leg press",
+          "nome": "Leg Press",
           "serie": 3,
           "reps": "8",
           "nota": "~110 kg, senza fermo. Richiamo 23/11: 2x8 a ~100",
@@ -287,31 +315,38 @@
             110
           ],
           "alias": [
+            "Leg press",
             "Pressa"
           ]
         },
         {
-          "nome": "Leg extension",
+          "nome": "Leg Extension",
           "serie": 2,
           "reps": "10",
           "nota": "~40. Tolta nel richiamo",
           "ultimo": [
             40,
             40
+          ],
+          "alias": [
+            "Leg extension"
           ]
         },
         {
-          "nome": "Leg curl sdraiato",
+          "nome": "Lying Leg Curl",
           "serie": 2,
           "reps": "10",
           "nota": "~35",
           "ultimo": [
             35,
             35
+          ],
+          "alias": [
+            "Leg curl sdraiato"
           ]
         },
         {
-          "nome": "Stacco rumeno con manubri",
+          "nome": "Dumbbell Romanian Deadlift",
           "serie": 2,
           "reps": "8",
           "nota": "~40, senza fermo. Tolto nel richiamo",
@@ -320,41 +355,45 @@
             40
           ],
           "alias": [
+            "Stacco rumeno con manubri",
             "RDL manubri"
           ]
         },
         {
-          "nome": "Calf raise in piedi",
+          "nome": "Standing Calf Raise",
           "serie": 3,
           "reps": "12",
           "nota": "2\" su, 2\" giù. Richiamo: 2x12",
           "ultimo": [],
           "alias": [
+            "Calf raise in piedi",
             "Polpacci in piedi"
           ]
         },
         {
-          "nome": "Calf raise da seduto",
+          "nome": "Seated Calf Raise",
           "serie": 3,
           "reps": "15",
           "nota": "Richiamo: 2x15",
           "ultimo": [],
           "alias": [
+            "Calf raise da seduto",
             "Polpacci da seduto (soleo)"
           ]
         },
         {
-          "nome": "Tibialis raise",
+          "nome": "Tibialis Raise",
           "serie": 2,
           "reps": "15",
           "nota": "corpo libero",
           "ultimo": [],
           "alias": [
+            "Tibialis raise",
             "Sollevamento punte (tibiale)"
           ]
         },
         {
-          "nome": "Curl con manubri da seduto",
+          "nome": "Seated Dumbbell Curl",
           "serie": 3,
           "reps": "9-11",
           "nota": "",
@@ -364,11 +403,12 @@
             12
           ],
           "alias": [
+            "Curl con manubri da seduto",
             "Bicipiti seduto su panca"
           ]
         },
         {
-          "nome": "Push down con corda",
+          "nome": "Rope Pushdown",
           "serie": 3,
           "reps": "9-11",
           "nota": "",
@@ -378,6 +418,7 @@
             9.5
           ],
           "alias": [
+            "Push down con corda",
             "Push down corda"
           ]
         }
