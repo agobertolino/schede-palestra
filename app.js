@@ -197,8 +197,7 @@
   }
 
   function renderScheda(s) {
-    let h = s.nota ? '<p class="nota-scheda">' + esc(s.nota) + '</p>' : '';
-    h += '<p id="stato" class="stato" role="status">' + esc(testoStato(s)) + '</p>';
+    let h = '';
     s.esercizi.forEach((ex, i) => {
       const prev = precedente(s, ex);
       const righe = bozzaDi(s.id).esercizi[chiave(i, ex)];
@@ -265,13 +264,6 @@
   }
 
   // ---------- Salvataggio automatico ----------
-  function testoStato(s) {
-    const id = inCorso(s);
-    const x = id && sessioni.find((y) => y.id === id);
-    return x ? '✓ Salvato automaticamente alle ' + oraBreve(x.aggiornata || x.data)
-      : 'Salvataggio automatico: ogni modifica viene salvata';
-  }
-
   function salvaBozzaCard(card) {
     const s = corrente();
     const i = Number(card.dataset.ex);
@@ -338,9 +330,7 @@
       sessioni.push(seduta);
       b.sedutaId = seduta.id;
     }
-    const ok = scrivi(K.sessioni, sessioni) && scrivi(K.bozza, bozza);
-    const el = $('#stato');
-    if (el) el.textContent = ok ? testoStato(s) : '⚠️ Salvataggio non riuscito';
+    if (!(scrivi(K.sessioni, sessioni) && scrivi(K.bozza, bozza))) toast('⚠️ Salvataggio non riuscito');
   }
 
   // ---------- Timer di recupero ----------

@@ -47,15 +47,10 @@ body.con-timer main { padding-bottom: calc(var(--tab-h) + var(--timer-h) + env(s
 .btn-sec { background: var(--card); color: var(--acc); font-weight: 600; padding: 0 16px; }
 .btn-sec.piena { display: block; width: 100%; margin-top: 10px; text-align: left; }
 
-.nota-scheda {
-  margin: 4px 0 12px; padding: 12px 14px; border-radius: 14px; font-size: 15px;
-  background: color-mix(in srgb, var(--acc) 15%, var(--card)); border-left: 4px solid var(--acc);
-}
 .card { background: var(--card); border-radius: 16px; padding: 14px; margin-bottom: 12px; }
 .card h2 { font-size: 17px; margin: 0; line-height: 1.25; }
 .schema { display: block; margin-top: 3px; color: var(--acc); font-weight: 600; font-size: 14px; }
 .nota { margin: 6px 0 0; color: var(--sub); font-size: 14px; }
-.stato { margin: 0 0 10px; color: var(--ok); font-size: 14px; font-weight: 600; }
 .ultima { margin: 6px 0 4px; color: var(--sub); font-size: 13px; }
 .ultima b { color: var(--txt); font-weight: 600; }
 
