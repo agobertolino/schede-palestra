@@ -3,7 +3,7 @@
   // ---------- Archiviazione (localStorage con try/catch ovunque) ----------
   const K = {
     sessioni: 'sp.sessioni', bozza: 'sp.bozza', durata: 'sp.durata',
-    timer: 'sp.timer', tab: 'sp.tab', schede: 'sp.schede', ridotto: 'sp.ridotto', catalogo: 'sp.catalogo'
+    timer: 'sp.timer', tab: 'sp.tab', schede: 'sp.schede', ridotto: 'sp.ridotto', catalogo: 'sp.catalogo', schedeUtente: 'sp.schedeUtente'
   };
   function leggi(k, def) {
     try {
@@ -65,7 +65,11 @@
   let schede = [];
   let catalogo = []; // dataset di tutti gli esercizi noti (catalogo.json)
   let tab = leggi(K.tab, null);
-  let vista = 'scheda'; // 'scheda' | 'storico' | 'dettaglio'
+  let vista = 'scheda'; // 'scheda' | 'storico' | 'dettaglio' | 'impostazioni' | 'modifica'
+  let schedeBase = []; // schede originali di schede.json (per "Ripristina")
+  let modificaId = null;
+  let confermaImp = null; // conferma in sospeso nelle impostazioni: 'riduci' | 'reset'
+  let confermaEd = -1; // indice dell'esercizio di cui si chiede conferma di rimozione nell'editor
   let dettaglioId = null;
   let sessioni = leggi(K.sessioni, []);
   if (!Array.isArray(sessioni)) sessioni = [];
@@ -122,6 +126,32 @@
       if (!s.id || !s.nome || !Array.isArray(s.esercizi)) throw new Error('scheda non valida');
     });
   }
+  const copia = (x) => JSON.parse(JSON.stringify(x));
+  function salvaSchede() { scrivi(K.schedeUtente, schede); }
+
+  // Applica una modifica alla scheda (aggiungi/togli/sposta/rinomina esercizi) tenendo allineati
+  // i dati già inseriti oggi: le chiavi della bozza dipendono dalla posizione e dal nome.
+  function modificaScheda(s, fn) {
+    const prima = s.esercizi.map((ex, i) => ({ ex, key: chiave(i, ex) }));
+    fn();
+    const b = bozza[s.id];
+    if (b && b.giorno === oggi() && b.esercizi && typeof b.esercizi === 'object') {
+      const mappa = new Map();
+      s.esercizi.forEach((ex, j) => { const p = prima.find((x) => x.ex === ex); if (p) mappa.set(p.key, chiave(j, ex)); });
+      const originale = (k) => prima.some((x) => x.key === k);
+      const nuovi = {};
+      Object.keys(b.esercizi).forEach((k) => {
+        if (mappa.has(k)) nuovi[mappa.get(k)] = b.esercizi[k];
+        else if (!originale(k)) nuovi[k] = b.esercizi[k]; // esercizio aggiunto a mano oggi
+      });
+      b.esercizi = nuovi;
+      b.rimossi = (b.rimossi || []).filter((k) => mappa.has(k) || !originale(k)).map((k) => mappa.get(k) || k);
+      (b.aggiunti || []).forEach((x) => { if (x.dopo && !mappa.has(x.dopo) && originale(x.dopo)) x.dopo = ''; else if (mappa.has(x.dopo)) x.dopo = mappa.get(x.dopo); });
+      if (b.sedutaId) autosalva(s); else scrivi(K.bozza, bozza);
+    }
+    salvaSchede();
+  }
+
   async function caricaSchede() {
     try {
       const r = await fetch('schede.json', { cache: 'no-cache' });
@@ -220,10 +250,20 @@
     if (!s) return;
     tab = s.id;
     renderTabbar();
-    $('#titolo').textContent = vista === 'scheda' ? s.nome : 'Storico · ' + s.nome;
-    $('#btn-vista').textContent = vista === 'scheda' ? 'Storico' : 'Allenamento';
+    const btn = $('#btn-vista');
+    $('#tabbar').hidden = vista === 'impostazioni' || vista === 'modifica';
+    if (vista === 'scheda') {
+      $('#titolo').textContent = s.nome;
+      btn.textContent = '⚙︎'; btn.setAttribute('aria-label', 'Impostazioni'); btn.classList.add('icona');
+    } else {
+      btn.classList.remove('icona'); btn.removeAttribute('aria-label');
+      $('#titolo').textContent = vista === 'impostazioni' ? 'Impostazioni' : vista === 'modifica' ? 'Modifica scheda' : 'Storico · ' + s.nome;
+      btn.textContent = vista === 'modifica' ? '‹ Impostazioni' : vista === 'impostazioni' ? 'Fine' : 'Allenamento';
+    }
     if (vista === 'scheda') renderScheda(s);
     else if (vista === 'storico') renderStorico(s);
+    else if (vista === 'impostazioni') renderImpostazioni();
+    else if (vista === 'modifica') renderModifica();
     else renderDettaglio();
   }
 
@@ -266,7 +306,7 @@
 
   function renderStorico(s) {
     const lista = ordinate().filter((x) => x.scheda === s.id);
-    let h = '<h2 class="sez">Sedute salvate</h2>';
+    let h = '<button type="button" id="btn-imp-torna" class="btn-sec">‹ Impostazioni</button><h2 class="sez">Sedute salvate</h2>';
     if (!lista.length) {
       h += '<p class="vuoto">Nessuna seduta salvata per questa scheda.</p>';
     } else {
@@ -339,6 +379,11 @@
     window.scrollTo(0, y);
   }
 
+  function mantieniScroll(fn) {
+    const y = window.scrollY;
+    fn();
+    window.scrollTo(0, y);
+  }
   function rirenderMantenendoScroll(s) {
     const y = window.scrollY;
     renderScheda(s);
@@ -429,6 +474,7 @@
 
   const dlg = $('#dlg-ex');
   let dlgDopo = '';
+  let dlgModo = 'seduta'; // 'seduta' (solo oggi) | 'scheda' (modifica la scheda)
   let dlgGruppo = '';
   function renderGruppi() {
     const gruppi = [...new Set(voci().map((c) => c.gruppo))];
@@ -447,8 +493,9 @@
     if (!h) h = '<li class="vuoto">Nessun esercizio trovato</li>';
     $('#dlg-risultati').innerHTML = h;
   }
-  function apriAggiungi(dopo) {
+  function apriAggiungi(dopo, modo) {
     dlgDopo = dopo;
+    dlgModo = modo || 'seduta';
     dlgGruppo = '';
     $('#dlg-form').reset();
     renderGruppi();
@@ -475,6 +522,13 @@
       ultimoReps: t && Array.isArray(t.ultimoReps) ? t.ultimoReps : [],
       alias
     };
+    if (dlgModo === 'scheda') {
+      const sc = schede.find((x) => x.id === modificaId);
+      if (sc) modificaScheda(sc, () => sc.esercizi.splice(dlgDopo + 1, 0, ex));
+      chiudiAggiungi();
+      mantieniScroll(renderModifica);
+      return;
+    }
     const b = bozzaDi(s.id);
     b.aggiunti = (b.aggiunti || []).concat({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), dopo: dlgDopo, ex });
     scrivi(K.bozza, bozza);
@@ -574,6 +628,70 @@
     }
   }
 
+  // ---------- Impostazioni e schede preimpostate ----------
+  const MAX_SCHEDE = 7;
+  function renderImpostazioni() {
+    const n = schede.length;
+    let h = '<h2 class="sez">Storico</h2>' +
+      '<button type="button" id="btn-apri-storico" class="voce"><span><strong>Storico sedute</strong>' +
+      '<small>' + sessioni.length + (sessioni.length === 1 ? ' seduta salvata' : ' sedute salvate') + ' · esporta e importa</small></span><span class="freccia" aria-hidden="true">›</span></button>' +
+      '<h2 class="sez">Schede preimpostate</h2><p class="sub">Quante schede usare (da 1 a ' + MAX_SCHEDE + ') e come sono fatte.</p>' +
+      '<div class="stepper"><button type="button" id="sch-meno" aria-label="Una scheda in meno"' + (n <= 1 ? ' disabled' : '') + '>−</button>' +
+      '<span class="stepper-n" aria-live="polite">' + n + (n === 1 ? ' scheda' : ' schede') + '</span>' +
+      '<button type="button" id="sch-piu" aria-label="Una scheda in più"' + (n >= MAX_SCHEDE ? ' disabled' : '') + '>+</button></div>';
+    if (confermaImp === 'riduci') {
+      const ultima = schede[n - 1];
+      h += '<div class="conferma-box" role="alert"><p class="conferma-testo">Togliere la scheda «' + esc(ultima.nome) + '» con i suoi ' +
+        ultima.esercizi.length + ' esercizi? Lo storico delle sedute resta salvato.</p>' +
+        '<button type="button" id="imp-annulla">Annulla</button><button type="button" id="imp-ok" class="rosso">Sì, togli</button></div>';
+    }
+    h += '<ul class="lista">' + schede.map((s) =>
+      '<li class="scheda-imp"><label class="sr-only" for="ns-' + esc(s.id) + '">Nome della scheda</label>' +
+      '<input id="ns-' + esc(s.id) + '" class="nome-scheda" data-id="' + esc(s.id) + '" type="text" maxlength="24" value="' + esc(s.nome) + '">' +
+      '<button type="button" class="modifica-scheda" data-id="' + esc(s.id) + '">Esercizi · ' + s.esercizi.length + ' ›</button></li>').join('') + '</ul>';
+    if (confermaImp === 'reset') {
+      h += '<div class="conferma-box" role="alert"><p class="conferma-testo">Ripristinare le schede originali? Le tue modifiche alle schede andranno perse. Lo storico resta salvato.</p>' +
+        '<button type="button" id="imp-annulla">Annulla</button><button type="button" id="imp-ok" class="rosso">Sì, ripristina</button></div>';
+    } else {
+      h += '<button type="button" id="sch-reset" class="btn-sec piena">↺ Ripristina schede originali</button>';
+    }
+    main.innerHTML = h;
+  }
+  function nuovaScheda() {
+    let k = schede.length + 1;
+    while (schede.some((s) => s.nome === 'Scheda ' + k)) k++;
+    return { id: 's' + Date.now().toString(36), nome: 'Scheda ' + k, nota: '', esercizi: [] };
+  }
+
+  function renderModifica() {
+    const s = schede.find((x) => x.id === modificaId);
+    if (!s) { vista = 'impostazioni'; render(); return; }
+    const riga = (idx) => '<button type="button" class="ed-aggiungi" data-idx="' + idx + '">+ Aggiungi esercizio</button>';
+    let h = '<label class="campo">Nome della scheda<input id="ed-nome" type="text" maxlength="24" value="' + esc(s.nome) + '"></label>' +
+      '<label class="campo">Nota (facoltativa)<input id="ed-nota" type="text" value="' + esc(s.nota || '') + '"></label>' +
+      '<h2 class="sez">Esercizi</h2>';
+    if (!s.esercizi.length) h += '<p class="vuoto">Nessun esercizio: aggiungine uno.</p>';
+    h += riga(-1);
+    s.esercizi.forEach((ex, i) => {
+      const n = s.esercizi.length;
+      h += '<section class="card ed-card" data-i="' + i + '">' +
+        '<input class="ed-ex-nome" data-campo="nome" type="text" value="' + esc(ex.nome) + '" aria-label="Nome esercizio">' +
+        '<div class="dlg-riga"><label>Serie<input data-campo="serie" type="number" inputmode="numeric" min="1" max="12" value="' + esc(ex.serie) + '"></label>' +
+        '<label>Reps<input data-campo="reps" type="text" value="' + esc(ex.reps ?? '') + '"></label></div>' +
+        '<label>Nota<input data-campo="nota" type="text" value="' + esc(ex.nota ?? '') + '"></label>';
+      if (confermaEd === i) {
+        h += '<div class="conferma-box" role="alert"><p class="conferma-testo">Togliere «' + esc(ex.nome) + '» dalla scheda?</p>' +
+          '<button type="button" class="ed-annulla">Annulla</button><button type="button" class="ed-ok rosso">Sì, togli</button></div>';
+      } else {
+        h += '<div class="azioni-serie"><button type="button" class="ed-su"' + (i === 0 ? ' disabled' : '') + ' aria-label="Sposta su">▲</button>' +
+          '<button type="button" class="ed-giu"' + (i === n - 1 ? ' disabled' : '') + ' aria-label="Sposta giù">▼</button>' +
+          '<button type="button" class="ed-togli">Togli</button></div>';
+      }
+      h += '</section>' + riga(i);
+    });
+    main.innerHTML = h;
+  }
+
   // ---------- Esporta / importa ----------
   function generaCsv() {
     const q = (v) => {
@@ -655,6 +773,44 @@
       salvaBozzaCard(card);
     }
   });
+  main.addEventListener('change', (e) => {
+    const t = e.target;
+    if (vista === 'impostazioni' && t.classList.contains('nome-scheda')) {
+      const s = schede.find((x) => x.id === t.dataset.id);
+      const nome = t.value.trim();
+      if (!s) return;
+      if (!nome) { t.value = s.nome; return; }
+      s.nome = nome; salvaSchede(); renderTabbar();
+    } else if (vista === 'modifica') {
+      const s = schede.find((x) => x.id === modificaId);
+      if (!s) return;
+      if (t.id === 'ed-nome') {
+        const nome = t.value.trim();
+        if (!nome) { t.value = s.nome; return; }
+        s.nome = nome; salvaSchede();
+      } else if (t.id === 'ed-nota') { s.nota = t.value.trim(); salvaSchede(); }
+      else if (t.dataset.campo) {
+        const i = Number(t.closest('.ed-card').dataset.i);
+        const ex = s.esercizi[i];
+        if (!ex) return;
+        const campo = t.dataset.campo;
+        if (campo === 'nome') {
+          const nome = t.value.trim();
+          if (!nome) { t.value = ex.nome; return; }
+          if (nome !== ex.nome) {
+            const vecchio = ex.nome;
+            modificaScheda(s, () => {
+              ex.alias = [...new Set([...(ex.alias || []), vecchio])].filter((x) => x !== nome); // lo storico resta collegato
+              ex.nome = nome;
+            });
+          }
+        } else if (campo === 'serie') {
+          const v = parseInt(t.value, 10);
+          if (v > 0) { ex.serie = Math.min(12, v); salvaSchede(); } else t.value = ex.serie;
+        } else { ex[campo] = t.value.trim(); salvaSchede(); }
+      }
+    }
+  });
   main.addEventListener('focusin', (e) => {
     if (e.target.matches('.serie input')) setTimeout(() => { try { e.target.select(); } catch (x) { /* */ } }, 0);
   });
@@ -668,6 +824,39 @@
       t.setAttribute('aria-pressed', String(fatta));
       salvaBozzaCard(t.closest('article.card'));
       if (fatta) avviaTimer();
+    } else if (t.id === 'btn-imp-torna') { vista = 'impostazioni'; render(); window.scrollTo(0, 0); }
+    else if (t.id === 'btn-apri-storico') { vista = 'storico'; render(); window.scrollTo(0, 0); }
+    else if (t.id === 'sch-piu') {
+      if (schede.length < MAX_SCHEDE) { schede.push(nuovaScheda()); salvaSchede(); confermaImp = null; mantieniScroll(renderImpostazioni); }
+    } else if (t.id === 'sch-meno') { if (schede.length > 1) { confermaImp = 'riduci'; mantieniScroll(renderImpostazioni); } }
+    else if (t.id === 'sch-reset') { confermaImp = 'reset'; mantieniScroll(renderImpostazioni); }
+    else if (t.id === 'imp-annulla') { confermaImp = null; mantieniScroll(renderImpostazioni); }
+    else if (t.id === 'imp-ok') {
+      if (confermaImp === 'riduci' && schede.length > 1) schede.pop();
+      else if (confermaImp === 'reset') schede = copia(schedeBase);
+      confermaImp = null;
+      salvaSchede();
+      if (!schede.some((x) => x.id === tab)) { tab = schede[0].id; scrivi(K.tab, tab); }
+      renderTabbar();
+      mantieniScroll(renderImpostazioni);
+    } else if (t.classList.contains('modifica-scheda')) { modificaId = t.dataset.id; confermaEd = -1; vista = 'modifica'; render(); window.scrollTo(0, 0); }
+    else if (t.classList.contains('ed-aggiungi')) { apriAggiungi(Number(t.dataset.idx), 'scheda'); }
+    else if (t.classList.contains('ed-su') || t.classList.contains('ed-giu')) {
+      const s = schede.find((x) => x.id === modificaId);
+      const i = Number(t.closest('.ed-card').dataset.i);
+      const j = t.classList.contains('ed-su') ? i - 1 : i + 1;
+      if (s && j >= 0 && j < s.esercizi.length) {
+        modificaScheda(s, () => { const [x] = s.esercizi.splice(i, 1); s.esercizi.splice(j, 0, x); });
+        mantieniScroll(renderModifica);
+      }
+    } else if (t.classList.contains('ed-togli')) { confermaEd = Number(t.closest('.ed-card').dataset.i); mantieniScroll(renderModifica); }
+    else if (t.classList.contains('ed-annulla')) { confermaEd = -1; mantieniScroll(renderModifica); }
+    else if (t.classList.contains('ed-ok')) {
+      const s = schede.find((x) => x.id === modificaId);
+      const i = Number(t.closest('.ed-card').dataset.i);
+      confermaEd = -1;
+      if (s && s.esercizi[i]) modificaScheda(s, () => s.esercizi.splice(i, 1));
+      mantieniScroll(renderModifica);
     } else if (t.classList.contains('togli-ex')) {
       chiediTogli(t.closest('.riga-ex'));
     } else if (t.classList.contains('annulla-togli')) {
@@ -699,7 +888,10 @@
     window.scrollTo(0, 0);
   });
   $('#btn-vista').addEventListener('click', () => {
-    vista = vista === 'scheda' ? 'storico' : 'scheda';
+    confermaImp = null; confermaEd = -1;
+    if (vista === 'scheda') vista = 'impostazioni';
+    else if (vista === 'modifica') vista = 'impostazioni';
+    else vista = 'scheda';
     render();
     window.scrollTo(0, 0);
   });
@@ -751,7 +943,10 @@
   async function avvio() {
     try {
       const d = await caricaSchede();
-      schede = d.schede;
+      schedeBase = d.schede;
+      schede = copia(d.schede);
+      const u = leggi(K.schedeUtente, null);
+      try { validaSchede({ schede: u }); if (u.length <= 7) schede = u; } catch (e) { /* si usano quelle originali */ }
       await caricaCatalogo();
     } catch (e) {
       main.innerHTML = '<p class="errore">Impossibile caricare le schede (' + esc(e.message) +
