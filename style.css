@@ -117,11 +117,14 @@ body.con-timer main { padding-bottom: calc(var(--tab-h) + var(--timer-h) + env(s
 @keyframes entra { from { transform: translateY(24px) scale(.96); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.04); } 100% { transform: scale(1); } }
 
-.aggiungi-ex {
-  display: block; width: 100%; min-height: 36px; margin: 0 0 8px; background: none; color: var(--sub);
-  border: 1px dashed var(--bordo); font-size: 14px; font-weight: 600;
-}
-.togli-ex { display: block; width: 100%; margin-top: 8px; min-height: 40px; background: none; color: #dc2626; font-size: 14px; font-weight: 600; }
+.riga-ex { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.riga-ex button { flex: 1 1 0; min-height: 40px; font-size: 14px; font-weight: 600; background: none; border: 1px dashed var(--bordo); }
+.aggiungi-ex { color: var(--sub); }
+.togli-ex { color: #dc2626; }
+.riga-ex.conferma { padding: 12px; border-radius: 14px; background: var(--card); border: 1px solid #dc2626; }
+.conferma-testo { flex: 1 0 100%; margin: 0; font-size: 15px; font-weight: 600; }
+.riga-ex.conferma button { border: 0; background: var(--input); }
+.riga-ex.conferma .conferma-togli { background: #dc2626; color: #fff; }
 .dlg { border: 0; border-radius: 18px; padding: 18px; width: min(92vw, 420px); background: var(--card); color: var(--txt); }
 .dlg::backdrop { background: rgba(0,0,0,.45); }
 .dlg h2 { margin: 0 0 12px; font-size: 20px; }

@@ -230,11 +230,13 @@
   function renderScheda(s) {
     let h = '';
     const lista = elenco(s);
-    const btnAgg = (dopo) => '<button type="button" class="aggiungi-ex" data-dopo="' + esc(dopo) + '">+ Aggiungi esercizio qui</button>';
-    let prevKey = '';
+    // Riga sotto ogni esercizio: aggiungi un esercizio dopo di lui, oppure togli lui. In cima solo "aggiungi".
+    const riga = (dopo, ex) => '<div class="riga-ex" data-key="' + esc(dopo) + '">' +
+      '<button type="button" class="aggiungi-ex" data-dopo="' + esc(dopo) + '">+ Aggiungi esercizio</button>' +
+      (ex ? '<button type="button" class="togli-ex" aria-label="Togli ' + esc(ex.nome) + ' dalla seduta">− Togli esercizio</button>' : '') +
+      '</div>';
+    h += riga('', null);
     lista.forEach(({ key, ex }) => {
-      h += btnAgg(prevKey);
-      prevKey = key;
       const prev = precedente(s, ex);
       const righe = bozzaDi(s.id).esercizi[key];
       const n = Array.isArray(righe) && righe.length ? righe.length : nSerie(ex);
@@ -257,9 +259,8 @@
       h += '<div class="azioni-serie">' +
         '<button type="button" class="meno-serie"' + (n <= 1 ? ' disabled' : '') + ' aria-label="' + esc(ex.nome) + ', togli una serie">− Serie</button>' +
         '<button type="button" class="piu-serie" aria-label="' + esc(ex.nome) + ', aggiungi una serie">+ Serie</button>' +
-        '</div><button type="button" class="togli-ex" aria-label="Togli ' + esc(ex.nome) + ' dalla seduta">Togli esercizio</button></article>';
+        '</div></article>' + riga(key, ex);
     });
-    h += btnAgg(prevKey);
     main.innerHTML = h;
   }
 
@@ -344,16 +345,35 @@
     window.scrollTo(0, y);
   }
 
-  function togliEsercizio(card) {
+  // "Togli esercizio" chiede sempre conferma: la riga si trasforma in Annulla / Sì, togli.
+  let rigaOriginale = null;
+  function chiediTogli(riga) {
     const s = corrente();
-    const key = card.dataset.key;
-    const v = voce(s, key);
+    const v = voce(s, riga.dataset.key);
     if (!v) return;
-    if (card.querySelector('.serie.fatta') &&
-        !confirm('Togliere "' + v.ex.nome + '"? Le serie già fatte oggi verranno tolte dalla seduta.')) return;
+    ripristinaRiga();
+    const card = [...main.querySelectorAll('article.card')].find((c) => c.dataset.key === riga.dataset.key);
+    const fatte = card ? card.querySelectorAll('.serie.fatta').length : 0;
+    rigaOriginale = { riga, html: riga.innerHTML };
+    riga.classList.add('conferma');
+    riga.innerHTML = '<p class="conferma-testo" role="alert">Togliere «' + esc(v.ex.nome) + '» dalla seduta di oggi?' +
+      (fatte ? (fatte === 1 ? ' La serie già fatta verrà tolta dalla seduta.' : ' Le ' + fatte + ' serie già fatte verranno tolte dalla seduta.') : '') + '</p>' +
+      '<button type="button" class="annulla-togli">Annulla</button>' +
+      '<button type="button" class="conferma-togli">Sì, togli</button>';
+  }
+  function ripristinaRiga() {
+    if (!rigaOriginale) return;
+    rigaOriginale.riga.classList.remove('conferma');
+    rigaOriginale.riga.innerHTML = rigaOriginale.html;
+    rigaOriginale = null;
+  }
+  function togliEsercizio(key) {
+    const s = corrente();
+    if (!voce(s, key)) return;
     const b = bozzaDi(s.id);
     b.rimossi = (b.rimossi || []).concat(key);
     delete b.esercizi[key];
+    rigaOriginale = null;
     autosalva(s);
     rirenderMantenendoScroll(s);
   }
@@ -649,7 +669,11 @@
       salvaBozzaCard(t.closest('article.card'));
       if (fatta) avviaTimer();
     } else if (t.classList.contains('togli-ex')) {
-      togliEsercizio(t.closest('article.card'));
+      chiediTogli(t.closest('.riga-ex'));
+    } else if (t.classList.contains('annulla-togli')) {
+      ripristinaRiga();
+    } else if (t.classList.contains('conferma-togli')) {
+      togliEsercizio(t.closest('.riga-ex').dataset.key);
     } else if (t.classList.contains('aggiungi-ex')) {
       apriAggiungi(t.dataset.dopo);
     } else if (t.classList.contains('piu-serie') || t.classList.contains('meno-serie')) {
