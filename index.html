@@ -30,9 +30,26 @@
     <button type="button" data-durata="120">2:00</button>
     <button type="button" data-durata="180">3:00</button>
   </div>
+  <a class="timer-musica" href="music://" aria-label="Apri Musica">♫</a>
+  <button id="timer-riduci" class="timer-riduci" type="button" aria-label="Nascondi timer">⌄</button>
   <button id="timer-chiudi" class="timer-chiudi" type="button" aria-label="Chiudi timer">✕</button>
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<dialog id="dlg-ex" class="dlg">
+  <form id="dlg-form" method="dialog">
+    <h2>Aggiungi esercizio</h2>
+    <label>Nome<input id="dlg-nome" type="text" list="elenco-ex" autocomplete="off" required placeholder="es. Leg Press"></label>
+    <datalist id="elenco-ex"></datalist>
+    <div class="dlg-riga">
+      <label>Serie<input id="dlg-serie" type="number" inputmode="numeric" min="1" max="12" placeholder="3"></label>
+      <label>Reps<input id="dlg-reps" type="text" inputmode="text" placeholder="8-12"></label>
+    </div>
+    <div class="dlg-azioni">
+      <button type="button" id="dlg-annulla" class="btn-sec">Annulla</button>
+      <button type="submit" class="btn-pri-inline">Aggiungi</button>
+    </div>
+  </form>
+</dialog>
 <nav id="tabbar" class="tabbar" aria-label="Schede"></nav>
 <input type="file" id="file-import" accept="application/json,.json" hidden>
 <script src="app.js" defer></script>

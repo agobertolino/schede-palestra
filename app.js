@@ -3,7 +3,7 @@
   // ---------- Archiviazione (localStorage con try/catch ovunque) ----------
   const K = {
     sessioni: 'sp.sessioni', bozza: 'sp.bozza', durata: 'sp.durata',
-    timer: 'sp.timer', tab: 'sp.tab', schede: 'sp.schede'
+    timer: 'sp.timer', tab: 'sp.tab', schede: 'sp.schede', ridotto: 'sp.ridotto'
   };
   function leggi(k, def) {
     try {
@@ -75,9 +75,25 @@
   let timer = leggi(K.timer, null);
   if (!timer || typeof timer.fine !== 'number') timer = null;
 
+  let ridotto = leggi(K.ridotto, false) === true;
+
   const corrente = () => schede.find((s) => s.id === tab) || schede[0];
   const ordinate = () => [...sessioni].sort((a, b) => String(b.data).localeCompare(String(a.data)));
   const chiave = (i, ex) => i + '|' + ex.nome;
+  // Elenco degli esercizi di oggi: quelli della scheda + quelli aggiunti a mano - quelli tolti.
+  // Le modifiche valgono solo per la seduta di oggi (sono nella bozza), la scheda resta com'è.
+  function elenco(s) {
+    const b = bozzaDi(s.id);
+    const v = s.esercizi.map((ex, i) => ({ key: chiave(i, ex), ex }));
+    (b.aggiunti || []).forEach((a) => {
+      let pos = 0;
+      if (a.dopo) { const k = v.findIndex((x) => x.key === a.dopo); pos = k < 0 ? v.length : k + 1; }
+      v.splice(pos, 0, { key: 'x' + a.id + '|' + a.ex.nome, ex: a.ex });
+    });
+    const rim = b.rimossi || [];
+    return v.filter((x) => !rim.includes(x.key));
+  }
+  const voce = (s, key) => elenco(s).find((v) => v.key === key);
   // Stesso esercizio anche se rinominato: "alias" in schede.json elenca i nomi precedenti.
   const stessoEsercizio = (x, ex) => x.nome === ex.nome || (Array.isArray(ex.alias) && ex.alias.includes(x.nome));
   const nSerie = (ex) => Math.max(1, parseInt(ex.serie, 10) || 1);
@@ -170,8 +186,8 @@
     return kg !== null || reps !== null ? { kg, reps } : null;
   }
 
-  function valore(scheda, ex, i, j) {
-    const b = bozzaDi(scheda.id).esercizi[chiave(i, ex)];
+  function valore(scheda, ex, key, j) {
+    const b = bozzaDi(scheda.id).esercizi[key];
     if (b && b[j]) return { kg: b[j].kg ?? '', reps: b[j].reps ?? '', fatta: !!b[j].fatta, toccata: !!b[j].toccata };
     const p = precedenteSerie(scheda, ex, j);
     return { kg: p ? fmtNum(num(p.kg)) : '', reps: p ? fmtNum(num(p.reps)) : '', fatta: false, toccata: false };
@@ -198,18 +214,23 @@
 
   function renderScheda(s) {
     let h = '';
-    s.esercizi.forEach((ex, i) => {
+    const lista = elenco(s);
+    const btnAgg = (dopo) => '<button type="button" class="aggiungi-ex" data-dopo="' + esc(dopo) + '">+ Aggiungi esercizio qui</button>';
+    let prevKey = '';
+    lista.forEach(({ key, ex }) => {
+      h += btnAgg(prevKey);
+      prevKey = key;
       const prev = precedente(s, ex);
-      const righe = bozzaDi(s.id).esercizi[chiave(i, ex)];
+      const righe = bozzaDi(s.id).esercizi[key];
       const n = Array.isArray(righe) && righe.length ? righe.length : nSerie(ex);
       const oggiSerie = n !== nSerie(ex) ? ' · oggi ' + n + ' serie' : '';
-      h += '<article class="card" data-ex="' + i + '">' +
+      h += '<article class="card" data-key="' + esc(key) + '">' +
         '<h2>' + esc(ex.nome) + '</h2><span class="schema">' + esc(schema(ex) + oggiSerie) + '</span>' +
         (ex.nota ? '<p class="nota">' + esc(ex.nota) + '</p>' : '') +
         '<p class="ultima">' + testoUltima(prev) + '</p>' +
         '<div class="serie-head" aria-hidden="true"><span>#</span><span>kg</span><span>reps</span><span>fatta</span></div>';
       for (let j = 0; j < n; j++) {
-        const v = valore(s, ex, i, j);
+        const v = valore(s, ex, key, j);
         const lab = esc(ex.nome) + ', serie ' + (j + 1);
         h += '<div class="serie' + (v.fatta ? ' fatta' : '') + '"' + (v.toccata ? ' data-toccata="1"' : '') + '>' +
           '<span class="n">' + (j + 1) + '</span>' +
@@ -221,8 +242,9 @@
       h += '<div class="azioni-serie">' +
         '<button type="button" class="meno-serie"' + (n <= 1 ? ' disabled' : '') + ' aria-label="' + esc(ex.nome) + ', togli una serie">− Serie</button>' +
         '<button type="button" class="piu-serie" aria-label="' + esc(ex.nome) + ', aggiungi una serie">+ Serie</button>' +
-        '</div></article>';
+        '</div><button type="button" class="togli-ex" aria-label="Togli ' + esc(ex.nome) + ' dalla seduta">Togli esercizio</button></article>';
     });
+    h += btnAgg(prevKey);
     main.innerHTML = h;
   }
 
@@ -266,10 +288,9 @@
   // ---------- Salvataggio automatico ----------
   function salvaBozzaCard(card) {
     const s = corrente();
-    const i = Number(card.dataset.ex);
-    const ex = s.esercizi[i];
-    if (!ex) return;
-    bozzaDi(s.id).esercizi[chiave(i, ex)] = [...card.querySelectorAll('.serie')].map((r) => ({
+    const key = card.dataset.key;
+    if (!voce(s, key)) return;
+    bozzaDi(s.id).esercizi[key] = [...card.querySelectorAll('.serie')].map((r) => ({
       kg: r.querySelector('[name="kg"]').value,
       reps: r.querySelector('[name="reps"]').value,
       fatta: r.classList.contains('fatta'),
@@ -281,11 +302,12 @@
   // Aggiunge (d = 1) o toglie (d = -1) l'ultima serie di un esercizio, solo per la seduta di oggi.
   function cambiaSerie(card, d) {
     const s = corrente();
-    const i = Number(card.dataset.ex);
-    const ex = s.esercizi[i];
-    if (!ex) return;
+    const key = card.dataset.key;
+    const v = voce(s, key);
+    if (!v) return;
+    const ex = v.ex;
     salvaBozzaCard(card);
-    const righe = bozzaDi(s.id).esercizi[chiave(i, ex)];
+    const righe = bozzaDi(s.id).esercizi[key];
     if (!Array.isArray(righe)) return;
     if (d > 0) {
       const p = precedenteSerie(s, ex, righe.length);
@@ -301,12 +323,75 @@
     window.scrollTo(0, y);
   }
 
+  function rirenderMantenendoScroll(s) {
+    const y = window.scrollY;
+    renderScheda(s);
+    window.scrollTo(0, y);
+  }
+
+  function togliEsercizio(card) {
+    const s = corrente();
+    const key = card.dataset.key;
+    const v = voce(s, key);
+    if (!v) return;
+    if (card.querySelector('.serie.fatta') &&
+        !confirm('Togliere "' + v.ex.nome + '"? Le serie già fatte oggi verranno tolte dalla seduta.')) return;
+    const b = bozzaDi(s.id);
+    b.rimossi = (b.rimossi || []).concat(key);
+    delete b.esercizi[key];
+    autosalva(s);
+    rirenderMantenendoScroll(s);
+  }
+
+  // Esercizi già noti (di tutte le schede e dello storico), per proporli quando se ne aggiunge uno.
+  function modelli() {
+    const m = new Map();
+    schede.forEach((s) => s.esercizi.forEach((e) => { if (!m.has(e.nome)) m.set(e.nome, e); }));
+    sessioni.forEach((x) => (x.esercizi || []).forEach((e) => {
+      if (!m.has(e.nome)) m.set(e.nome, { nome: e.nome, serie: 3, reps: '' });
+    }));
+    return m;
+  }
+  const dlg = $('#dlg-ex');
+  let dlgDopo = '';
+  function apriAggiungi(dopo) {
+    dlgDopo = dopo;
+    const mod = modelli();
+    $('#elenco-ex').innerHTML = [...mod.keys()].sort((x, y) => x.localeCompare(y))
+      .map((n) => '<option value="' + esc(n) + '"></option>').join('');
+    $('#dlg-form').reset();
+    if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+    $('#dlg-nome').focus();
+  }
+  function chiudiAggiungi() {
+    if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open');
+  }
+  function confermaAggiungi() {
+    const nome = $('#dlg-nome').value.trim();
+    if (!nome) { $('#dlg-nome').focus(); return; }
+    const s = corrente();
+    const t = modelli().get(nome);
+    const serie = parseInt($('#dlg-serie').value, 10);
+    const reps = $('#dlg-reps').value.trim();
+    const ex = {
+      nome, serie: serie > 0 ? serie : (t ? nSerie(t) : 3), reps: reps || (t ? t.reps : '') || '', nota: '',
+      ultimo: t && Array.isArray(t.ultimo) ? t.ultimo : [],
+      ultimoReps: t && Array.isArray(t.ultimoReps) ? t.ultimoReps : [],
+      alias: t && Array.isArray(t.alias) ? t.alias : []
+    };
+    const b = bozzaDi(s.id);
+    b.aggiunti = (b.aggiunti || []).concat({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), dopo: dlgDopo, ex });
+    scrivi(K.bozza, bozza);
+    chiudiAggiungi();
+    rirenderMantenendoScroll(s);
+  }
+
   // Aggiorna (o crea) la seduta di oggi con le serie spuntate o modificate a mano.
   function autosalva(s) {
     const b = bozzaDi(s.id);
     const esercizi = [];
-    s.esercizi.forEach((ex, i) => {
-      const righe = b.esercizi[chiave(i, ex)];
+    elenco(s).forEach(({ key, ex }) => {
+      const righe = b.esercizi[key];
       if (!Array.isArray(righe)) return;
       const serie = righe
         .map((r, j) => ({ n: j + 1, kg: num(r.kg), reps: num(r.reps), fatta: !!r.fatta, toccata: !!r.toccata }))
@@ -362,6 +447,7 @@
     }
     const eraNascosto = elTimer.hidden;
     elTimer.hidden = false;
+    elTimer.classList.toggle('ridotto', ridotto);
     document.body.classList.add('con-timer');
     elTimer.classList.remove('finito');
     if (eraNascosto) { elTimer.classList.remove('entra'); void elTimer.offsetWidth; elTimer.classList.add('entra'); }
@@ -383,7 +469,7 @@
       return;
     }
     clearInterval(tick); tick = null;
-    elTempo.textContent = 'Si riparte!';
+    elTempo.textContent = ridotto ? '✓' : 'Si riparte!';
     if (!elTimer.classList.contains('finito')) elTimer.classList.add('finito');
     if (!timer.avvisato) {
       timer.avvisato = true;
@@ -486,6 +572,10 @@
       t.setAttribute('aria-pressed', String(fatta));
       salvaBozzaCard(t.closest('article.card'));
       if (fatta) avviaTimer();
+    } else if (t.classList.contains('togli-ex')) {
+      togliEsercizio(t.closest('article.card'));
+    } else if (t.classList.contains('aggiungi-ex')) {
+      apriAggiungi(t.dataset.dopo);
     } else if (t.classList.contains('piu-serie') || t.classList.contains('meno-serie')) {
       cambiaSerie(t.closest('article.card'), t.classList.contains('piu-serie') ? 1 : -1);
     } else if (t.classList.contains('voce')) { dettaglioId = t.dataset.id; vista = 'dettaglio'; render(); window.scrollTo(0, 0); }
@@ -514,8 +604,15 @@
     window.scrollTo(0, 0);
   });
   elTimer.addEventListener('click', (e) => {
+    if (e.target.closest('a')) return; // link a Musica
+    if (ridotto) {
+      if (elTimer.classList.contains('finito')) fermaTimer();
+      else { ridotto = false; scrivi(K.ridotto, false); mostraTimer(); }
+      return;
+    }
     const b = e.target.closest('button');
     if (!b) return;
+    if (b.id === 'timer-riduci') { ridotto = true; scrivi(K.ridotto, true); mostraTimer(); return; }
     if (b.dataset.durata) {
       durata = Number(b.dataset.durata);
       scrivi(K.durata, durata);
@@ -529,6 +626,8 @@
       fermaTimer();
     }
   });
+  $('#dlg-form').addEventListener('submit', (e) => { e.preventDefault(); confermaAggiungi(); });
+  $('#dlg-annulla').addEventListener('click', chiudiAggiungi);
   document.addEventListener('visibilitychange', () => { if (!document.hidden && timer) mostraTimer(); });
 
   // ---------- Avvio ----------
