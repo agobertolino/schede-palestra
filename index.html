@@ -38,11 +38,12 @@
 <dialog id="dlg-ex" class="dlg">
   <form id="dlg-form" method="dialog">
     <h2>Aggiungi esercizio</h2>
-    <label>Nome<input id="dlg-nome" type="text" list="elenco-ex" autocomplete="off" required placeholder="es. Leg Press"></label>
-    <datalist id="elenco-ex"></datalist>
+    <input id="dlg-nome" type="search" autocomplete="off" autocapitalize="sentences" enterkeyhint="done" placeholder="Cerca o scrivi un esercizio" aria-label="Nome esercizio">
+    <div id="dlg-gruppi" class="chips" role="group" aria-label="Gruppo muscolare"></div>
+    <ul id="dlg-risultati" class="risultati"></ul>
     <div class="dlg-riga">
       <label>Serie<input id="dlg-serie" type="number" inputmode="numeric" min="1" max="12" placeholder="3"></label>
-      <label>Reps<input id="dlg-reps" type="text" inputmode="text" placeholder="8-12"></label>
+      <label>Reps<input id="dlg-reps" type="text" placeholder="8-12"></label>
     </div>
     <div class="dlg-azioni">
       <button type="button" id="dlg-annulla" class="btn-sec">Annulla</button>

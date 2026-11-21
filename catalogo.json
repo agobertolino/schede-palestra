@@ -1,0 +1,1687 @@
+{
+ "esercizi": [
+  {
+   "nome": "Barbell Bench Press",
+   "gruppo": "Petto",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Panca piana",
+    "Panca piana bilanciere",
+    "Bench press",
+    "Panca",
+    "Panca piana con bilanciere"
+   ]
+  },
+  {
+   "nome": "Incline Barbell Bench Press",
+   "gruppo": "Petto",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Panca inclinata bilanciere"
+   ]
+  },
+  {
+   "nome": "Decline Barbell Bench Press",
+   "gruppo": "Petto",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Panca declinata"
+   ]
+  },
+  {
+   "nome": "Dumbbell Bench Press",
+   "gruppo": "Petto",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Panca piana manubri"
+   ]
+  },
+  {
+   "nome": "Incline Dumbbell Press",
+   "gruppo": "Petto",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Panca inclinata manubri",
+    "Panca inclinata con manubri"
+   ]
+  },
+  {
+   "nome": "Decline Dumbbell Press",
+   "gruppo": "Petto",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Panca declinata manubri"
+   ]
+  },
+  {
+   "nome": "Machine Chest Press",
+   "gruppo": "Petto",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Chest press",
+    "Pressa petto",
+    "Macchina petto"
+   ]
+  },
+  {
+   "nome": "Incline Machine Chest Press",
+   "gruppo": "Petto",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Chest press inclinata"
+   ]
+  },
+  {
+   "nome": "Smith Machine Bench Press",
+   "gruppo": "Petto",
+   "attrezzo": "Multipower",
+   "alias": [
+    "Panca multipower"
+   ]
+  },
+  {
+   "nome": "Smith Machine Incline Press",
+   "gruppo": "Petto",
+   "attrezzo": "Multipower",
+   "alias": [
+    "Panca inclinata multipower"
+   ]
+  },
+  {
+   "nome": "Push-ups",
+   "gruppo": "Petto",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Flessioni",
+    "Piegamenti"
+   ]
+  },
+  {
+   "nome": "Weighted Push-ups",
+   "gruppo": "Petto",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Flessioni zavorrate"
+   ]
+  },
+  {
+   "nome": "Chest Dips",
+   "gruppo": "Petto",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Dip petto",
+    "Parallele petto"
+   ]
+  },
+  {
+   "nome": "Dumbbell Fly",
+   "gruppo": "Petto",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Croci manubri",
+    "Croci su panca"
+   ]
+  },
+  {
+   "nome": "Incline Dumbbell Fly",
+   "gruppo": "Petto",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Croci inclinate"
+   ]
+  },
+  {
+   "nome": "Pec Deck Fly",
+   "gruppo": "Petto",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Pec deck",
+    "Pec fly",
+    "Croci macchina",
+    "Butterfly"
+   ]
+  },
+  {
+   "nome": "Cable Crossover",
+   "gruppo": "Petto",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Croci ai cavi",
+    "Croci cavi alti"
+   ]
+  },
+  {
+   "nome": "Low-to-High Cable Fly",
+   "gruppo": "Petto",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Croci ai cavi dal basso",
+    "Croci basse"
+   ]
+  },
+  {
+   "nome": "Seated Low Cable Fly",
+   "gruppo": "Petto",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Croci ai cavi dal basso da seduto",
+    "Croci basse da seduto"
+   ]
+  },
+  {
+   "nome": "High-to-Low Cable Fly",
+   "gruppo": "Petto",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Croci cavi dall'alto"
+   ]
+  },
+  {
+   "nome": "Single-Arm Cable Fly",
+   "gruppo": "Petto",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Croci a un braccio"
+   ]
+  },
+  {
+   "nome": "Landmine Press",
+   "gruppo": "Petto",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Landmine"
+   ]
+  },
+  {
+   "nome": "Svend Press",
+   "gruppo": "Petto",
+   "attrezzo": "Disco",
+   "alias": [
+    "Press con disco"
+   ]
+  },
+  {
+   "nome": "Pull-ups",
+   "gruppo": "Schiena",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Trazioni",
+    "Trazioni alla sbarra",
+    "Trazioni prese prone"
+   ]
+  },
+  {
+   "nome": "Chin-ups",
+   "gruppo": "Schiena",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Trazioni supine",
+    "Trazioni presa supina"
+   ]
+  },
+  {
+   "nome": "Neutral-Grip Pull-ups",
+   "gruppo": "Schiena",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Trazioni presa neutra"
+   ]
+  },
+  {
+   "nome": "Weighted Pull-ups",
+   "gruppo": "Schiena",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Trazioni zavorrate"
+   ]
+  },
+  {
+   "nome": "Assisted Pull-ups",
+   "gruppo": "Schiena",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Trazioni assistite",
+    "Gravitron"
+   ]
+  },
+  {
+   "nome": "Lat Pulldown",
+   "gruppo": "Schiena",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Lat machine",
+    "Lat machine presa larga",
+    "Pulldown"
+   ]
+  },
+  {
+   "nome": "Neutral-Grip Lat Pulldown",
+   "gruppo": "Schiena",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Lat machine presa neutra"
+   ]
+  },
+  {
+   "nome": "Close-Grip Lat Pulldown",
+   "gruppo": "Schiena",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Lat machine presa stretta"
+   ]
+  },
+  {
+   "nome": "Reverse-Grip Lat Pulldown",
+   "gruppo": "Schiena",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Lat machine presa inversa",
+    "Lat machine supina"
+   ]
+  },
+  {
+   "nome": "Single-Arm Lat Pulldown",
+   "gruppo": "Schiena",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Lat machine a un braccio"
+   ]
+  },
+  {
+   "nome": "Straight-Arm Pulldown",
+   "gruppo": "Schiena",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Pulldown a braccia tese",
+    "Pull down",
+    "Pullover ai cavi"
+   ]
+  },
+  {
+   "nome": "Iliac Pulldown",
+   "gruppo": "Schiena",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Iliac pull down",
+    "Pulldown iliaco",
+    "Iliac pulldown"
+   ]
+  },
+  {
+   "nome": "Barbell Row",
+   "gruppo": "Schiena",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Rematore bilanciere",
+    "Rematore con bilanciere"
+   ]
+  },
+  {
+   "nome": "Pendlay Row",
+   "gruppo": "Schiena",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Rematore Pendlay"
+   ]
+  },
+  {
+   "nome": "Dumbbell Row",
+   "gruppo": "Schiena",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Rematore manubrio",
+    "Rematore con manubrio",
+    "Rematore a un braccio"
+   ]
+  },
+  {
+   "nome": "Chest-Supported Dumbbell Row",
+   "gruppo": "Schiena",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Rematore su panca inclinata"
+   ]
+  },
+  {
+   "nome": "Machine Row",
+   "gruppo": "Schiena",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Rematore alla macchina",
+    "Rematore macchina",
+    "Rematore macchina/bilanciere"
+   ]
+  },
+  {
+   "nome": "Chest-Supported Machine Row",
+   "gruppo": "Schiena",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Rematore petto appoggiato"
+   ]
+  },
+  {
+   "nome": "Seated Cable Row",
+   "gruppo": "Schiena",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Pulley",
+    "Rematore al cavo",
+    "Low row"
+   ]
+  },
+  {
+   "nome": "Wide-Grip Seated Cable Row",
+   "gruppo": "Schiena",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Pulley presa larga"
+   ]
+  },
+  {
+   "nome": "Single-Arm Cable Row",
+   "gruppo": "Schiena",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Rematore al cavo a un braccio"
+   ]
+  },
+  {
+   "nome": "T-Bar Row",
+   "gruppo": "Schiena",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Rematore T-bar"
+   ]
+  },
+  {
+   "nome": "Smith Machine Row",
+   "gruppo": "Schiena",
+   "attrezzo": "Multipower",
+   "alias": [
+    "Rematore multipower"
+   ]
+  },
+  {
+   "nome": "Inverted Row",
+   "gruppo": "Schiena",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Rematore inverso",
+    "Australian pull-ups"
+   ]
+  },
+  {
+   "nome": "Cable Pullover",
+   "gruppo": "Schiena",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Pullover cavo"
+   ]
+  },
+  {
+   "nome": "Dumbbell Pullover",
+   "gruppo": "Schiena",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Pullover manubrio"
+   ]
+  },
+  {
+   "nome": "Face Pull",
+   "gruppo": "Schiena",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Face pull",
+    "Tirate al viso"
+   ]
+  },
+  {
+   "nome": "Back Extension",
+   "gruppo": "Schiena",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Iperestensioni",
+    "Hyperextension"
+   ]
+  },
+  {
+   "nome": "Reverse Hyperextension",
+   "gruppo": "Schiena",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Iperestensioni inverse"
+   ]
+  },
+  {
+   "nome": "Rack Pull",
+   "gruppo": "Schiena",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Stacco dai blocchi"
+   ]
+  },
+  {
+   "nome": "Shrugs (Barbell)",
+   "gruppo": "Schiena",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Scrollate bilanciere",
+    "Shrug"
+   ]
+  },
+  {
+   "nome": "Shrugs (Dumbbell)",
+   "gruppo": "Schiena",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Scrollate manubri"
+   ]
+  },
+  {
+   "nome": "Shoulder Press",
+   "gruppo": "Spalle",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Military press manubri",
+    "Lento avanti manubri",
+    "Shoulder press manubri",
+    "Shoulder press"
+   ]
+  },
+  {
+   "nome": "Barbell Overhead Press",
+   "gruppo": "Spalle",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Military press",
+    "Lento avanti",
+    "Lento avanti bilanciere"
+   ]
+  },
+  {
+   "nome": "Machine Shoulder Press",
+   "gruppo": "Spalle",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Shoulder press macchina",
+    "Lento avanti macchina"
+   ]
+  },
+  {
+   "nome": "Smith Machine Shoulder Press",
+   "gruppo": "Spalle",
+   "attrezzo": "Multipower",
+   "alias": [
+    "Lento avanti multipower"
+   ]
+  },
+  {
+   "nome": "Arnold Press",
+   "gruppo": "Spalle",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Arnold press"
+   ]
+  },
+  {
+   "nome": "Seated Dumbbell Shoulder Press",
+   "gruppo": "Spalle",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Lento avanti seduto"
+   ]
+  },
+  {
+   "nome": "Push Press",
+   "gruppo": "Spalle",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Push press"
+   ]
+  },
+  {
+   "nome": "Dumbbell Lateral Raise",
+   "gruppo": "Spalle",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Alzate laterali",
+    "Alzate laterali manubri"
+   ]
+  },
+  {
+   "nome": "Chest-Supported Lateral Raise",
+   "gruppo": "Spalle",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Alzate laterali con manubri su panca",
+    "Alzate laterali su panca"
+   ]
+  },
+  {
+   "nome": "Cable Lateral Raise",
+   "gruppo": "Spalle",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Alzate laterali al cavo"
+   ]
+  },
+  {
+   "nome": "Chest-Supported Cable Lateral Raise",
+   "gruppo": "Spalle",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Alzate laterali al cavo su panca",
+    "Alzate laterali ai cavi su panca"
+   ]
+  },
+  {
+   "nome": "Machine Lateral Raise",
+   "gruppo": "Spalle",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Alzate laterali macchina"
+   ]
+  },
+  {
+   "nome": "Single-Arm Cable Lateral Raise",
+   "gruppo": "Spalle",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Alzate laterali al cavo a un braccio"
+   ]
+  },
+  {
+   "nome": "Dumbbell Front Raise",
+   "gruppo": "Spalle",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Alzate frontali"
+   ]
+  },
+  {
+   "nome": "Cable Front Raise",
+   "gruppo": "Spalle",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Alzate frontali al cavo"
+   ]
+  },
+  {
+   "nome": "Plate Front Raise",
+   "gruppo": "Spalle",
+   "attrezzo": "Disco",
+   "alias": [
+    "Alzate frontali con disco"
+   ]
+  },
+  {
+   "nome": "Dumbbell Rear Delt Raise",
+   "gruppo": "Spalle",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Alzate posteriori",
+    "Alzate posteriori manubri"
+   ]
+  },
+  {
+   "nome": "Cable Rear Delt Fly",
+   "gruppo": "Spalle",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Alzate posteriori al cavo",
+    "Rear delt al cavo",
+    "Reverse fly al cavo"
+   ]
+  },
+  {
+   "nome": "Reverse Pec Deck",
+   "gruppo": "Spalle",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Pec deck inverso",
+    "Rear delt macchina",
+    "Reverse fly macchina"
+   ]
+  },
+  {
+   "nome": "Upright Row",
+   "gruppo": "Spalle",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Tirate al mento"
+   ]
+  },
+  {
+   "nome": "Cable Upright Row",
+   "gruppo": "Spalle",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Tirate al mento ai cavi"
+   ]
+  },
+  {
+   "nome": "Cuban Press",
+   "gruppo": "Spalle",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Cuban rotation"
+   ]
+  },
+  {
+   "nome": "External Rotation (Cable)",
+   "gruppo": "Spalle",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Rotazioni esterne",
+    "Extrarotazioni"
+   ]
+  },
+  {
+   "nome": "Barbell Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Curl bilanciere",
+    "Curl con bilanciere"
+   ]
+  },
+  {
+   "nome": "EZ-Bar Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Bilanciere EZ",
+   "alias": [
+    "Curl bilanciere EZ",
+    "Curl con EZ"
+   ]
+  },
+  {
+   "nome": "Dumbbell Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Curl manubri",
+    "Curl con manubri"
+   ]
+  },
+  {
+   "nome": "Seated Dumbbell Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Curl con manubri da seduto",
+    "Curl seduto",
+    "Bicipiti seduto su panca"
+   ]
+  },
+  {
+   "nome": "Incline Dumbbell Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Curl su panca inclinata"
+   ]
+  },
+  {
+   "nome": "Hammer Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Curl a martello",
+    "Hammer"
+   ]
+  },
+  {
+   "nome": "Cross-Body Hammer Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Curl a martello incrociato"
+   ]
+  },
+  {
+   "nome": "Concentration Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Curl di concentrazione",
+    "Curl singolo su panca"
+   ]
+  },
+  {
+   "nome": "Preacher Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Bilanciere EZ",
+   "alias": [
+    "Curl alla panca Scott",
+    "Scott curl"
+   ]
+  },
+  {
+   "nome": "Machine Preacher Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Curl Scott macchina"
+   ]
+  },
+  {
+   "nome": "Spider Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Curl spider"
+   ]
+  },
+  {
+   "nome": "Cable Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Curl ai cavi",
+    "Curl al cavo"
+   ]
+  },
+  {
+   "nome": "Single-Arm Cable Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Curl al cavo a un braccio"
+   ]
+  },
+  {
+   "nome": "Bayesian Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Curl bayesian",
+    "Curl cavo dietro"
+   ]
+  },
+  {
+   "nome": "Rope Hammer Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Curl a martello con corda"
+   ]
+  },
+  {
+   "nome": "Reverse Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Bilanciere EZ",
+   "alias": [
+    "Curl inverso"
+   ]
+  },
+  {
+   "nome": "Drag Curl",
+   "gruppo": "Bicipiti",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Drag curl"
+   ]
+  },
+  {
+   "nome": "Rope Pushdown",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Push down con corda",
+    "Push down corda",
+    "Pushdown corda"
+   ]
+  },
+  {
+   "nome": "Straight-Bar Pushdown",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Push down con barra",
+    "Push down barra"
+   ]
+  },
+  {
+   "nome": "V-Bar Pushdown",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Push down con V"
+   ]
+  },
+  {
+   "nome": "Single-Arm Cable Pushdown",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Push down a un braccio al cavo",
+    "Tricipiti singoli al cavo",
+    "Push down a un braccio"
+   ]
+  },
+  {
+   "nome": "Reverse-Grip Pushdown",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Push down presa inversa"
+   ]
+  },
+  {
+   "nome": "Overhead Cable Triceps Extension",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Estensioni sopra la testa ai cavi",
+    "French press al cavo"
+   ]
+  },
+  {
+   "nome": "Overhead Dumbbell Triceps Extension",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "French press manubrio",
+    "Estensioni sopra la testa manubrio"
+   ]
+  },
+  {
+   "nome": "Skull Crusher",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Bilanciere EZ",
+   "alias": [
+    "French press",
+    "French press sdraiato",
+    "Skull crushers"
+   ]
+  },
+  {
+   "nome": "Dumbbell Skull Crusher",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "French press manubri"
+   ]
+  },
+  {
+   "nome": "Close-Grip Bench Press",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Panca presa stretta"
+   ]
+  },
+  {
+   "nome": "Triceps Dips",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Dip tricipiti",
+    "Parallele tricipiti"
+   ]
+  },
+  {
+   "nome": "Bench Dips",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Dip su panca"
+   ]
+  },
+  {
+   "nome": "Machine Dips",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Dip macchina"
+   ]
+  },
+  {
+   "nome": "Dumbbell Kickback",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Kickback",
+    "Kickback manubrio"
+   ]
+  },
+  {
+   "nome": "Cable Kickback",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Kickback al cavo"
+   ]
+  },
+  {
+   "nome": "JM Press",
+   "gruppo": "Tricipiti",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "JM press"
+   ]
+  },
+  {
+   "nome": "Barbell Back Squat",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Squat",
+    "Squat bilanciere",
+    "Squat con bilanciere"
+   ]
+  },
+  {
+   "nome": "Barbell Front Squat",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Squat frontale"
+   ]
+  },
+  {
+   "nome": "Smith Machine Squat",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Multipower",
+   "alias": [
+    "Squat multipower"
+   ]
+  },
+  {
+   "nome": "Hack Squat",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Hack squat",
+    "Hack"
+   ]
+  },
+  {
+   "nome": "Goblet Squat",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Squat goblet"
+   ]
+  },
+  {
+   "nome": "Bulgarian Split Squat",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Affondi bulgari",
+    "Split squat bulgaro",
+    "Squat bulgaro"
+   ]
+  },
+  {
+   "nome": "Walking Lunges",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Affondi camminati",
+    "Affondi"
+   ]
+  },
+  {
+   "nome": "Reverse Lunges",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Affondi indietro"
+   ]
+  },
+  {
+   "nome": "Dumbbell Step-ups",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Step up",
+    "Salite sulla panca"
+   ]
+  },
+  {
+   "nome": "Leg Press",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Pressa",
+    "Pressa orizzontale",
+    "Pressa 45",
+    "Leg press"
+   ]
+  },
+  {
+   "nome": "Single-Leg Press",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Pressa a una gamba"
+   ]
+  },
+  {
+   "nome": "Leg Extension",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Leg extension",
+    "Estensioni gambe"
+   ]
+  },
+  {
+   "nome": "Sissy Squat",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Sissy squat"
+   ]
+  },
+  {
+   "nome": "Pistol Squat",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Squat a una gamba"
+   ]
+  },
+  {
+   "nome": "Wall Sit",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Sedia al muro"
+   ]
+  },
+  {
+   "nome": "Belt Squat",
+   "gruppo": "Quadricipiti",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Belt squat"
+   ]
+  },
+  {
+   "nome": "Lying Leg Curl",
+   "gruppo": "Femorali",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Leg curl sdraiato",
+    "Leg curl"
+   ]
+  },
+  {
+   "nome": "Seated Leg Curl",
+   "gruppo": "Femorali",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Leg curl da seduto"
+   ]
+  },
+  {
+   "nome": "Standing Leg Curl",
+   "gruppo": "Femorali",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Leg curl in piedi"
+   ]
+  },
+  {
+   "nome": "Dumbbell Romanian Deadlift",
+   "gruppo": "Femorali",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Stacco rumeno con manubri",
+    "RDL manubri",
+    "Stacco rumeno manubri"
+   ]
+  },
+  {
+   "nome": "Barbell Romanian Deadlift",
+   "gruppo": "Femorali",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Stacco rumeno",
+    "Stacco rumeno bilanciere",
+    "RDL"
+   ]
+  },
+  {
+   "nome": "Stiff-Leg Deadlift",
+   "gruppo": "Femorali",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Stacco a gambe tese"
+   ]
+  },
+  {
+   "nome": "Good Morning",
+   "gruppo": "Femorali",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Good morning"
+   ]
+  },
+  {
+   "nome": "Nordic Hamstring Curl",
+   "gruppo": "Femorali",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Nordic curl",
+    "Nordic hamstring"
+   ]
+  },
+  {
+   "nome": "Single-Leg Romanian Deadlift",
+   "gruppo": "Femorali",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Stacco rumeno a una gamba"
+   ]
+  },
+  {
+   "nome": "Glute-Ham Raise",
+   "gruppo": "Femorali",
+   "attrezzo": "Macchina",
+   "alias": [
+    "GHR"
+   ]
+  },
+  {
+   "nome": "Barbell Hip Thrust",
+   "gruppo": "Glutei",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Hip thrust",
+    "Spinte d'anca"
+   ]
+  },
+  {
+   "nome": "Machine Hip Thrust",
+   "gruppo": "Glutei",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Hip thrust macchina"
+   ]
+  },
+  {
+   "nome": "Glute Bridge",
+   "gruppo": "Glutei",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Ponte glutei"
+   ]
+  },
+  {
+   "nome": "Cable Pull-Through",
+   "gruppo": "Glutei",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Pull through"
+   ]
+  },
+  {
+   "nome": "Cable Glute Kickback",
+   "gruppo": "Glutei",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Kickback glutei al cavo",
+    "Calci indietro al cavo"
+   ]
+  },
+  {
+   "nome": "Hip Abduction Machine",
+   "gruppo": "Glutei",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Abduttori",
+    "Abductor"
+   ]
+  },
+  {
+   "nome": "Hip Adduction Machine",
+   "gruppo": "Glutei",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Adduttori",
+    "Adductor"
+   ]
+  },
+  {
+   "nome": "Sumo Squat",
+   "gruppo": "Glutei",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Squat sumo"
+   ]
+  },
+  {
+   "nome": "Frog Pumps",
+   "gruppo": "Glutei",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Frog pump"
+   ]
+  },
+  {
+   "nome": "Standing Calf Raise",
+   "gruppo": "Polpacci",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Calf raise in piedi",
+    "Polpacci in piedi",
+    "Calf in piedi"
+   ]
+  },
+  {
+   "nome": "Seated Calf Raise",
+   "gruppo": "Polpacci",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Calf raise da seduto",
+    "Polpacci da seduto (soleo)",
+    "Polpacci da seduto",
+    "Soleo"
+   ]
+  },
+  {
+   "nome": "Leg Press Calf Raise",
+   "gruppo": "Polpacci",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Calf alla pressa",
+    "Polpacci alla pressa"
+   ]
+  },
+  {
+   "nome": "Single-Leg Calf Raise",
+   "gruppo": "Polpacci",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Calf a una gamba"
+   ]
+  },
+  {
+   "nome": "Donkey Calf Raise",
+   "gruppo": "Polpacci",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Calf donkey"
+   ]
+  },
+  {
+   "nome": "Tibialis Raise",
+   "gruppo": "Polpacci",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Sollevamento punte (tibiale)",
+    "Tibiale",
+    "Tibialis",
+    "Tibialis raise"
+   ]
+  },
+  {
+   "nome": "Hollow Body Hold",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Hollow body hold (barchetta)",
+    "Barchetta",
+    "Hollow hold"
+   ]
+  },
+  {
+   "nome": "Dead Bug",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Dead bug"
+   ]
+  },
+  {
+   "nome": "Plank",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Tavola"
+   ]
+  },
+  {
+   "nome": "Side Plank",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Plank laterale"
+   ]
+  },
+  {
+   "nome": "Hanging Leg Raise",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Sollevamento gambe alla sbarra",
+    "Leg raise alla sbarra"
+   ]
+  },
+  {
+   "nome": "Hanging Knee Raise",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Sollevamento ginocchia alla sbarra"
+   ]
+  },
+  {
+   "nome": "Lying Leg Raise",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Sollevamento gambe a terra"
+   ]
+  },
+  {
+   "nome": "Cable Crunch",
+   "gruppo": "Core",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Crunch al cavo"
+   ]
+  },
+  {
+   "nome": "Crunch",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Addominali"
+   ]
+  },
+  {
+   "nome": "Machine Crunch",
+   "gruppo": "Core",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Crunch alla macchina"
+   ]
+  },
+  {
+   "nome": "Ab Wheel Rollout",
+   "gruppo": "Core",
+   "attrezzo": "Ruota",
+   "alias": [
+    "Ab wheel",
+    "Ruota addominali"
+   ]
+  },
+  {
+   "nome": "Pallof Press",
+   "gruppo": "Core",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Pallof"
+   ]
+  },
+  {
+   "nome": "Russian Twist",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Torsioni russe"
+   ]
+  },
+  {
+   "nome": "Cable Woodchopper",
+   "gruppo": "Core",
+   "attrezzo": "Cavi",
+   "alias": [
+    "Woodchop",
+    "Taglialegna"
+   ]
+  },
+  {
+   "nome": "Bird Dog",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Bird dog"
+   ]
+  },
+  {
+   "nome": "Decline Sit-ups",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Sit-up declinato"
+   ]
+  },
+  {
+   "nome": "Dragon Flag",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Dragon flag"
+   ]
+  },
+  {
+   "nome": "Mountain Climbers",
+   "gruppo": "Core",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Scalatori"
+   ]
+  },
+  {
+   "nome": "Farmer's Walk",
+   "gruppo": "Core",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Camminata del contadino",
+    "Farmer walk"
+   ]
+  },
+  {
+   "nome": "Suitcase Carry",
+   "gruppo": "Core",
+   "attrezzo": "Manubri",
+   "alias": [
+    "Suitcase carry"
+   ]
+  },
+  {
+   "nome": "Wrist Curl",
+   "gruppo": "Avambracci",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Curl polsi",
+    "Wrist curl"
+   ]
+  },
+  {
+   "nome": "Reverse Wrist Curl",
+   "gruppo": "Avambracci",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Curl polsi inverso"
+   ]
+  },
+  {
+   "nome": "Dead Hang",
+   "gruppo": "Avambracci",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Sospensione alla sbarra",
+    "Hang"
+   ]
+  },
+  {
+   "nome": "Plate Pinch",
+   "gruppo": "Avambracci",
+   "attrezzo": "Disco",
+   "alias": [
+    "Pinch con dischi"
+   ]
+  },
+  {
+   "nome": "Conventional Deadlift",
+   "gruppo": "Corpo intero",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Stacco",
+    "Stacco da terra",
+    "Deadlift"
+   ]
+  },
+  {
+   "nome": "Sumo Deadlift",
+   "gruppo": "Corpo intero",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Stacco sumo"
+   ]
+  },
+  {
+   "nome": "Trap Bar Deadlift",
+   "gruppo": "Corpo intero",
+   "attrezzo": "Trap bar",
+   "alias": [
+    "Stacco con trap bar",
+    "Stacco esagonale"
+   ]
+  },
+  {
+   "nome": "Power Clean",
+   "gruppo": "Corpo intero",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Clean",
+    "Power clean"
+   ]
+  },
+  {
+   "nome": "Kettlebell Swing",
+   "gruppo": "Corpo intero",
+   "attrezzo": "Kettlebell",
+   "alias": [
+    "Swing",
+    "Swing kettlebell"
+   ]
+  },
+  {
+   "nome": "Turkish Get-up",
+   "gruppo": "Corpo intero",
+   "attrezzo": "Kettlebell",
+   "alias": [
+    "Turkish get up"
+   ]
+  },
+  {
+   "nome": "Burpees",
+   "gruppo": "Corpo intero",
+   "attrezzo": "Corpo libero",
+   "alias": [
+    "Burpee"
+   ]
+  },
+  {
+   "nome": "Thrusters",
+   "gruppo": "Corpo intero",
+   "attrezzo": "Bilanciere",
+   "alias": [
+    "Thruster"
+   ]
+  },
+  {
+   "nome": "Sled Push",
+   "gruppo": "Corpo intero",
+   "attrezzo": "Slitta",
+   "alias": [
+    "Spinta slitta"
+   ]
+  },
+  {
+   "nome": "Battle Ropes",
+   "gruppo": "Corpo intero",
+   "attrezzo": "Corde",
+   "alias": [
+    "Corde ondulatorie"
+   ]
+  },
+  {
+   "nome": "Treadmill Walk",
+   "gruppo": "Cardio",
+   "attrezzo": "Tapis roulant",
+   "alias": [
+    "Camminata",
+    "Tapis roulant"
+   ]
+  },
+  {
+   "nome": "Incline Treadmill Walk",
+   "gruppo": "Cardio",
+   "attrezzo": "Tapis roulant",
+   "alias": [
+    "Camminata inclinata"
+   ]
+  },
+  {
+   "nome": "Treadmill Run",
+   "gruppo": "Cardio",
+   "attrezzo": "Tapis roulant",
+   "alias": [
+    "Corsa",
+    "Corsa su tapis roulant"
+   ]
+  },
+  {
+   "nome": "Stationary Bike",
+   "gruppo": "Cardio",
+   "attrezzo": "Cyclette",
+   "alias": [
+    "Cyclette",
+    "Bici"
+   ]
+  },
+  {
+   "nome": "Rowing Machine",
+   "gruppo": "Cardio",
+   "attrezzo": "Vogatore",
+   "alias": [
+    "Vogatore",
+    "Rower"
+   ]
+  },
+  {
+   "nome": "Elliptical",
+   "gruppo": "Cardio",
+   "attrezzo": "Ellittica",
+   "alias": [
+    "Ellittica"
+   ]
+  },
+  {
+   "nome": "Stair Climber",
+   "gruppo": "Cardio",
+   "attrezzo": "Macchina",
+   "alias": [
+    "Scala",
+    "Stairmaster"
+   ]
+  },
+  {
+   "nome": "Jump Rope",
+   "gruppo": "Cardio",
+   "attrezzo": "Corda",
+   "alias": [
+    "Salto con la corda",
+    "Corda"
+   ]
+  },
+  {
+   "nome": "Assault Bike",
+   "gruppo": "Cardio",
+   "attrezzo": "Bici",
+   "alias": [
+    "Air bike"
+   ]
+  }
+ ]
+}

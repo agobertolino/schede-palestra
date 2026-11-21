@@ -3,7 +3,7 @@
   // ---------- Archiviazione (localStorage con try/catch ovunque) ----------
   const K = {
     sessioni: 'sp.sessioni', bozza: 'sp.bozza', durata: 'sp.durata',
-    timer: 'sp.timer', tab: 'sp.tab', schede: 'sp.schede', ridotto: 'sp.ridotto'
+    timer: 'sp.timer', tab: 'sp.tab', schede: 'sp.schede', ridotto: 'sp.ridotto', catalogo: 'sp.catalogo'
   };
   function leggi(k, def) {
     try {
@@ -63,6 +63,7 @@
   // ---------- Stato ----------
   const main = $('#main');
   let schede = [];
+  let catalogo = []; // dataset di tutti gli esercizi noti (catalogo.json)
   let tab = leggi(K.tab, null);
   let vista = 'scheda'; // 'scheda' | 'storico' | 'dettaglio'
   let dettaglioId = null;
@@ -134,6 +135,20 @@
       if (d) return d;
       throw e;
     }
+  }
+
+  async function caricaCatalogo() {
+    let d = null;
+    try {
+      const r = await fetch('catalogo.json', { cache: 'no-cache' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      d = await r.json();
+      if (!d || !Array.isArray(d.esercizi)) throw new Error('formato non valido');
+      scrivi(K.catalogo, d);
+    } catch (e) {
+      d = leggi(K.catalogo, null);
+    }
+    catalogo = d && Array.isArray(d.esercizi) ? d.esercizi.filter((c) => c && typeof c.nome === 'string') : [];
   }
 
   // Valori dell'ultima volta: seduta più recente di questa scheda con quell'esercizio,
@@ -343,41 +358,102 @@
     rirenderMantenendoScroll(s);
   }
 
-  // Esercizi già noti (di tutte le schede e dello storico), per proporli quando se ne aggiunge uno.
-  function modelli() {
-    const m = new Map();
-    schede.forEach((s) => s.esercizi.forEach((e) => { if (!m.has(e.nome)) m.set(e.nome, e); }));
-    sessioni.forEach((x) => (x.esercizi || []).forEach((e) => {
-      if (!m.has(e.nome)) m.set(e.nome, { nome: e.nome, serie: 3, reps: '' });
-    }));
-    return m;
+  // ---------- Catalogo esercizi ----------
+  // Confronto senza maiuscole, accenti e punteggiatura: "Stacco rumeno" = "stacco  rumeno".
+  const norm = (s) => String(s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ').trim();
+
+  // Catalogo + esercizi presenti nelle schede o nello storico ma non nel catalogo (gruppo "Altri").
+  function voci() {
+    const noti = new Set();
+    catalogo.forEach((c) => { noti.add(norm(c.nome)); (c.alias || []).forEach((x) => noti.add(norm(x))); });
+    const extra = [];
+    const aggiungi = (nome) => {
+      const n = norm(nome);
+      if (n && !noti.has(n)) { noti.add(n); extra.push({ nome, gruppo: 'Altri', attrezzo: '', alias: [] }); }
+    };
+    schede.forEach((s) => s.esercizi.forEach((x) => aggiungi(x.nome)));
+    sessioni.forEach((x) => (x.esercizi || []).forEach((y) => aggiungi(y.nome)));
+    return catalogo.concat(extra);
   }
+  // Voce del catalogo con quel nome o alias (stesso esercizio, comunque lo si scriva).
+  function trova(nome) {
+    const n = norm(nome);
+    if (!n) return null;
+    return voci().find((c) => norm(c.nome) === n) || voci().find((c) => (c.alias || []).some((x) => norm(x) === n)) || null;
+  }
+  // Esercizio già presente in una scheda con quel nome: serve per serie, reps e ultimi carichi.
+  function modelloScheda(nome) {
+    const n = norm(nome);
+    for (const s of schede) {
+      const t = s.esercizi.find((x) => norm(x.nome) === n || (x.alias || []).some((y) => norm(y) === n));
+      if (t) return t;
+    }
+    return null;
+  }
+  function cerca(q, gruppo) {
+    const toks = norm(q).split(' ').filter(Boolean);
+    const nq = norm(q);
+    const ris = [];
+    voci().forEach((c) => {
+      if (gruppo && c.gruppo !== gruppo) return;
+      const nome = norm(c.nome);
+      const hay = nome + ' ' + (c.alias || []).map(norm).join(' ') + ' ' + norm(c.gruppo) + ' ' + norm(c.attrezzo);
+      if (!toks.every((t) => hay.includes(t))) return;
+      const punti = !toks.length ? 0 : nome === nq ? 0 : nome.startsWith(nq) ? 1 : nome.includes(nq) ? 2 : 3;
+      ris.push({ c, punti });
+    });
+    ris.sort((x, y) => x.punti - y.punti || x.c.nome.localeCompare(y.c.nome));
+    return ris.map((r) => r.c);
+  }
+
   const dlg = $('#dlg-ex');
   let dlgDopo = '';
+  let dlgGruppo = '';
+  function renderGruppi() {
+    const gruppi = [...new Set(voci().map((c) => c.gruppo))];
+    $('#dlg-gruppi').innerHTML = ['', ...gruppi].map((g) =>
+      '<button type="button" class="chip" data-g="' + esc(g) + '" aria-pressed="' + (g === dlgGruppo) + '">' + esc(g || 'Tutti') + '</button>').join('');
+  }
+  function renderRisultati() {
+    const q = $('#dlg-nome').value;
+    const ris = cerca(q, dlgGruppo).slice(0, 60);
+    let h = '';
+    if (q.trim() && !trova(q)) {
+      h += '<li><button type="button" class="ris ris-nuovo" data-nome="' + esc(q.trim()) + '">＋ Crea “' + esc(q.trim()) + '”</button></li>';
+    }
+    h += ris.map((c) => '<li><button type="button" class="ris" data-nome="' + esc(c.nome) + '"><b>' + esc(c.nome) + '</b>' +
+      '<small>' + esc([c.gruppo, c.attrezzo].filter(Boolean).join(' · ')) + '</small></button></li>').join('');
+    if (!h) h = '<li class="vuoto">Nessun esercizio trovato</li>';
+    $('#dlg-risultati').innerHTML = h;
+  }
   function apriAggiungi(dopo) {
     dlgDopo = dopo;
-    const mod = modelli();
-    $('#elenco-ex').innerHTML = [...mod.keys()].sort((x, y) => x.localeCompare(y))
-      .map((n) => '<option value="' + esc(n) + '"></option>').join('');
+    dlgGruppo = '';
     $('#dlg-form').reset();
+    renderGruppi();
+    renderRisultati();
     if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
-    $('#dlg-nome').focus();
   }
   function chiudiAggiungi() {
     if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open');
   }
   function confermaAggiungi() {
-    const nome = $('#dlg-nome').value.trim();
-    if (!nome) { $('#dlg-nome').focus(); return; }
+    const scritto = $('#dlg-nome').value.trim();
+    if (!scritto) { $('#dlg-nome').focus(); return; }
     const s = corrente();
-    const t = modelli().get(nome);
+    const c = trova(scritto);
+    const nome = c ? c.nome : scritto;      // nome ufficiale del catalogo, così si ritrovano gli stessi esercizi
+    const t = modelloScheda(nome);
     const serie = parseInt($('#dlg-serie').value, 10);
     const reps = $('#dlg-reps').value.trim();
+    const alias = [...new Set([...(c && c.alias ? c.alias : []), ...(t && t.alias ? t.alias : []), ...(t && t.nome !== nome ? [t.nome] : [])])]
+      .filter((x) => x !== nome);
     const ex = {
       nome, serie: serie > 0 ? serie : (t ? nSerie(t) : 3), reps: reps || (t ? t.reps : '') || '', nota: '',
       ultimo: t && Array.isArray(t.ultimo) ? t.ultimo : [],
       ultimoReps: t && Array.isArray(t.ultimoReps) ? t.ultimoReps : [],
-      alias: t && Array.isArray(t.alias) ? t.alias : []
+      alias
     };
     const b = bozzaDi(s.id);
     b.aggiunti = (b.aggiunti || []).concat({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), dopo: dlgDopo, ex });
@@ -626,6 +702,23 @@
       fermaTimer();
     }
   });
+  $('#dlg-nome').addEventListener('input', renderRisultati);
+  $('#dlg-gruppi').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-g]');
+    if (!b) return;
+    dlgGruppo = b.dataset.g;
+    renderGruppi();
+    renderRisultati();
+  });
+  $('#dlg-risultati').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-nome]');
+    if (!b) return;
+    $('#dlg-nome').value = b.dataset.nome;
+    const t = modelloScheda(b.dataset.nome);
+    $('#dlg-serie').placeholder = t ? String(nSerie(t)) : '3';
+    $('#dlg-reps').placeholder = t && t.reps ? String(t.reps) : '8-12';
+    $('#dlg-serie').focus();
+  });
   $('#dlg-form').addEventListener('submit', (e) => { e.preventDefault(); confermaAggiungi(); });
   $('#dlg-annulla').addEventListener('click', chiudiAggiungi);
   document.addEventListener('visibilitychange', () => { if (!document.hidden && timer) mostraTimer(); });
@@ -635,6 +728,7 @@
     try {
       const d = await caricaSchede();
       schede = d.schede;
+      await caricaCatalogo();
     } catch (e) {
       main.innerHTML = '<p class="errore">Impossibile caricare le schede (' + esc(e.message) +
         '). Apri l\'app una volta con internet attivo.</p>';
