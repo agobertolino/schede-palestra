@@ -336,6 +336,7 @@
   // ---------- Timer di recupero ----------
   const elTimer = $('#timer');
   const elTempo = $('#timer-tempo');
+  const elBarra = $('#timer-barra');
   let tick = null;
 
   function avviaTimer() {
@@ -359,9 +360,17 @@
       clearInterval(tick); tick = null;
       return;
     }
+    const eraNascosto = elTimer.hidden;
     elTimer.hidden = false;
     document.body.classList.add('con-timer');
     elTimer.classList.remove('finito');
+    if (eraNascosto) { elTimer.classList.remove('entra'); void elTimer.offsetWidth; elTimer.classList.add('entra'); }
+    // La barra si svuota in modo fluido con una animazione CSS sincronizzata sul tempo reale.
+    const tot = Math.max(1, (timer.fine - timer.inizio) / 1000);
+    const trascorso = Math.max(0, (Date.now() - timer.inizio) / 1000);
+    elBarra.style.animation = 'none';
+    void elBarra.offsetWidth;
+    elBarra.style.animation = 'scarica ' + tot + 's linear ' + (-trascorso) + 's forwards';
     aggiornaTimer();
     if (!tick && timer && timer.fine > Date.now()) tick = setInterval(aggiornaTimer, 250);
   }
@@ -374,16 +383,12 @@
       return;
     }
     clearInterval(tick); tick = null;
-    elTempo.textContent = 'Recupero finito!';
+    elTempo.textContent = 'Si riparte!';
     if (!elTimer.classList.contains('finito')) elTimer.classList.add('finito');
     if (!timer.avvisato) {
       timer.avvisato = true;
       scrivi(K.timer, timer);
       try { if (navigator.vibrate) navigator.vibrate([400, 150, 400, 150, 400]); } catch (e) { /* non supportata */ }
-      document.body.classList.remove('lampo');
-      void document.body.offsetWidth;
-      document.body.classList.add('lampo');
-      setTimeout(() => document.body.classList.remove('lampo'), 1700);
     }
   }
 
