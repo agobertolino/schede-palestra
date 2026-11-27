@@ -82,7 +82,11 @@
 
   let ridotto = leggi(K.ridotto, false) === true;
 
-  const corrente = () => schede.find((s) => s.id === tab) || schede[0];
+  // Scheda "Giornaliera": sempre disponibile, parte vuota ogni giorno e la costruisci in palestra
+  // aggiungendo gli esercizi uno alla volta. I carichi "ultima volta" arrivano da tutto lo storico.
+  const GIORNALIERA = { id: 'libera', nome: 'Giornaliera', nota: '', esercizi: [], libera: true };
+  const tutte = () => schede.concat(GIORNALIERA);
+  const corrente = () => tutte().find((s) => s.id === tab) || schede[0];
   const ordinate = () => [...sessioni].sort((a, b) => String(b.data).localeCompare(String(a.data)));
   const chiave = (i, ex) => i + '|' + ex.nome;
   // Elenco degli esercizi di oggi: quelli della scheda + quelli aggiunti a mano - quelli tolti.
@@ -186,7 +190,7 @@
   function precedente(scheda, ex) {
     const escludi = inCorso(scheda);
     for (const s of ordinate()) {
-      if (s.scheda !== scheda.id || s.id === escludi || !Array.isArray(s.esercizi)) continue;
+      if ((!scheda.libera && s.scheda !== scheda.id) || s.id === escludi || !Array.isArray(s.esercizi)) continue;
       const e = s.esercizi.find((x) => stessoEsercizio(x, ex));
       if (e && Array.isArray(e.serie) && e.serie.length) return { data: s.data, serie: e.serie };
     }
@@ -202,6 +206,112 @@
     if (!reps) return ex.serie + ' serie';
     if (/\dx\d/i.test(reps)) return ex.serie + ' serie · ' + reps;
     return ex.serie + ' × ' + reps;
+  }
+
+  // ---------- Progressione intelligente ----------
+  // Doppia progressione: finché non raggiungi il massimo del range di reps su tutte le serie
+  // col carico più alto, resta a quel peso e aggiungi ripetizioni; poi alza il peso e riparti dal minimo.
+  function intervalliReps(ex) {
+    const txt = String(ex.reps ?? '');
+    if (!txt.trim() || /["”″']/.test(txt)) return null; // tenute a tempo: nessun suggerimento
+    const segs = [];
+    txt.split('+').forEach((p) => {
+      const m = p.match(/(?:(\d+)(?:\s*-\s*\d+)?\s*x\s*)?(\d+)(?:\s*-\s*(\d+))?/i);
+      if (!m) return;
+      const lo = parseInt(m[2], 10), hi = m[3] ? parseInt(m[3], 10) : lo;
+      segs.push({ cnt: m[1] ? parseInt(m[1], 10) : null, lo: Math.min(lo, hi), hi: Math.max(lo, hi) });
+    });
+    if (!segs.length) return null;
+    return (j) => {
+      let resto = j;
+      for (const sg of segs) {
+        if (sg.cnt === null || resto < sg.cnt) return [sg.lo, sg.hi];
+        resto -= sg.cnt;
+      }
+      const u = segs[segs.length - 1];
+      return [u.lo, u.hi];
+    };
+  }
+  // Di quanto alzare il carico, in base all'attrezzo (dal catalogo) e al peso attuale.
+  function passoCarico(ex, kg) {
+    const c = trova(ex.nome);
+    const att = c ? c.attrezzo : '';
+    if (att === 'Manubri') return 2;
+    if (kg < 10) return 1;
+    if (att === 'Macchina') return 5;
+    return 2.5;
+  }
+  const mezzo = (x) => Math.round(x * 2) / 2;
+
+  function suggerimento(scheda, ex) {
+    const prev = precedente(scheda, ex);
+    const rng = intervalliReps(ex);
+    if (!prev || !rng) return null;
+    const serie = prev.serie.map((x, j) => ({ j, kg: num(x.kg), reps: num(x.reps) })).filter((x) => x.reps !== null);
+    if (!serie.length) return null;
+    const kgs = serie.map((x) => x.kg).filter((k) => k !== null);
+    const conPeso = kgs.length > 0;
+    const kgTop = conPeso ? Math.max(...kgs) : null;
+    const top = serie.filter((x) => !conPeso || x.kg === kgTop);
+    const alMax = top.every((x) => x.reps >= rng(x.j)[1]);
+    const sotto = conPeso && top.every((x) => x.reps < rng(x.j)[0]);
+    const ultimoDato = serie[serie.length - 1];
+    const dellaSerie = (j) => serie.find((x) => x.j === j) || ultimoDato;
+    const kgTxt = (k) => fmtNum(k) + ' kg';
+    if (alMax) {
+      const nuovo = conPeso ? mezzo(kgTop + passoCarico(ex, kgTop)) : 2.5;
+      return {
+        tipo: 'su',
+        testo: conPeso
+          ? 'Alza a ' + kgTxt(nuovo) + ' e riparti da ' + rng(0)[0] + ' reps'
+          : 'Massimo del range raggiunto: aggiungi zavorra (' + kgTxt(nuovo) + ') e riparti da ' + rng(0)[0] + ' reps',
+        piano: (j) => ({ kg: nuovo, reps: rng(j)[0] })
+      };
+    }
+    if (sotto) {
+      const nuovo = Math.max(0, mezzo(kgTop - passoCarico(ex, kgTop))); // un gradino sotto: i carichi reali sono a scatti
+      return {
+        tipo: 'giu',
+        testo: 'Troppo pesante: scendi a ' + kgTxt(nuovo) + ' e punta a ' + rng(0)[0] + ' reps',
+        piano: (j) => ({ kg: nuovo, reps: rng(j)[0] })
+      };
+    }
+    const obiettivo = (j) => Math.min(rng(j)[1], dellaSerie(j).reps + 1);
+    return {
+      tipo: 'reps',
+      testo: (conPeso ? 'Resta a ' + kgTxt(kgTop) + ': ' : 'Obiettivo: ') + '+1 rep per serie (fino a ' + rng(0)[1] + ')',
+      piano: (j) => ({ kg: conPeso ? (dellaSerie(j).kg ?? kgTop) : null, reps: obiettivo(j) })
+    };
+  }
+
+  // Riga con il consiglio sotto "Ultima volta"; "Applica" precompila le serie non ancora fatte.
+  function htmlSuggerimento(s, ex, key, n) {
+    const sug = suggerimento(s, ex);
+    if (!sug) return '';
+    const daFare = [];
+    for (let j = 0; j < n; j++) { const v = valore(s, ex, key, j); if (!v.fatta) daFare.push({ j, v }); }
+    const applicato = daFare.length && daFare.every(({ j, v }) => {
+      const p = sug.piano(j);
+      return (p.kg === null || num(v.kg) === p.kg) && num(v.reps) === p.reps;
+    });
+    const icona = sug.tipo === 'su' ? '▲' : sug.tipo === 'giu' ? '▼' : '＋';
+    return '<p class="suggerimento sug-' + sug.tipo + '"><span class="sug-testo"><b>' + icona + '</b> ' + esc(sug.testo) + '</span>' +
+      (!daFare.length ? '' : applicato ? '<span class="sug-ok">✓ applicato</span>'
+        : '<button type="button" class="applica-sug">Applica</button>') + '</p>';
+  }
+  function applicaSuggerimento(card) {
+    const s = corrente();
+    const v = voce(s, card.dataset.key);
+    const sug = v && suggerimento(s, v.ex);
+    if (!sug) return;
+    [...card.querySelectorAll('.serie')].forEach((riga, j) => {
+      if (riga.classList.contains('fatta')) return;
+      const p = sug.piano(j);
+      if (p.kg !== null) riga.querySelector('[name="kg"]').value = fmtNum(p.kg);
+      riga.querySelector('[name="reps"]').value = fmtNum(p.reps);
+    });
+    salvaBozzaCard(card);
+    mantieniScroll(() => renderScheda(s));
   }
 
   function testoUltima(prev) {
@@ -221,7 +331,7 @@
   function precedenteSerie(scheda, ex, j) {
     const escludi = inCorso(scheda);
     for (const s of ordinate()) {
-      if (s.scheda !== scheda.id || s.id === escludi || !Array.isArray(s.esercizi)) continue;
+      if ((!scheda.libera && s.scheda !== scheda.id) || s.id === escludi || !Array.isArray(s.esercizi)) continue;
       const e = s.esercizi.find((x) => stessoEsercizio(x, ex));
       const r = e && Array.isArray(e.serie) ? e.serie.find((x) => x.n === j + 1) : null;
       if (r) return r;
@@ -240,7 +350,7 @@
 
   // ---------- Render ----------
   function renderTabbar() {
-    $('#tabbar').innerHTML = schede.map((s) =>
+    $('#tabbar').innerHTML = tutte().map((s) =>
       '<button type="button" class="tab" data-tab="' + esc(s.id) + '"' +
       (s.id === tab ? ' aria-current="page"' : '') + '>' + esc(s.nome) + '</button>').join('');
   }
@@ -276,6 +386,9 @@
       (ex ? '<button type="button" class="togli-ex" aria-label="Togli ' + esc(ex.nome) + ' dalla seduta">− Togli esercizio</button>' : '') +
       '</div>';
     h += riga('', null);
+    if (!lista.length) {
+      h += '<p class="vuoto">' + (s.libera ? 'Scheda giornaliera vuota: aggiungi gli esercizi man mano che ti alleni.' : 'Nessun esercizio in questa scheda: aggiungine uno.') + '</p>';
+    }
     lista.forEach(({ key, ex }) => {
       const prev = precedente(s, ex);
       const righe = bozzaDi(s.id).esercizi[key];
@@ -284,7 +397,7 @@
       h += '<article class="card" data-key="' + esc(key) + '">' +
         '<h2>' + esc(ex.nome) + '</h2><span class="schema">' + esc(schema(ex) + oggiSerie) + '</span>' +
         (ex.nota ? '<p class="nota">' + esc(ex.nota) + '</p>' : '') +
-        '<p class="ultima">' + testoUltima(prev) + '</p>' +
+        '<p class="ultima">' + testoUltima(prev) + '</p>' + htmlSuggerimento(s, ex, key, n) +
         '<div class="serie-head" aria-hidden="true"><span>#</span><span>kg</span><span>reps</span><span>fatta</span></div>';
       for (let j = 0; j < n; j++) {
         const v = valore(s, ex, key, j);
@@ -505,6 +618,12 @@
   function chiudiAggiungi() {
     if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open');
   }
+  // Range di reps di partenza per un esercizio nuovo (serve al tracker per consigliare quando alzare).
+  function repsPredefinite(c) {
+    if (c.gruppo === 'Cardio') return '';
+    if (/plank|hold|hang|wall sit|carry|walk|battle/i.test(c.nome)) return '30"';
+    return '8-12';
+  }
   function confermaAggiungi() {
     const scritto = $('#dlg-nome').value.trim();
     if (!scritto) { $('#dlg-nome').focus(); return; }
@@ -517,7 +636,7 @@
     const alias = [...new Set([...(c && c.alias ? c.alias : []), ...(t && t.alias ? t.alias : []), ...(t && t.nome !== nome ? [t.nome] : [])])]
       .filter((x) => x !== nome);
     const ex = {
-      nome, serie: serie > 0 ? serie : (t ? nSerie(t) : 3), reps: reps || (t ? t.reps : '') || '', nota: '',
+      nome, serie: serie > 0 ? serie : (t ? nSerie(t) : 3), reps: reps || (t ? t.reps : '') || repsPredefinite(c || { nome, gruppo: '' }), nota: '',
       ultimo: t && Array.isArray(t.ultimo) ? t.ultimo : [],
       ultimoReps: t && Array.isArray(t.ultimoReps) ? t.ultimoReps : [],
       alias
@@ -836,7 +955,7 @@
       else if (confermaImp === 'reset') schede = copia(schedeBase);
       confermaImp = null;
       salvaSchede();
-      if (!schede.some((x) => x.id === tab)) { tab = schede[0].id; scrivi(K.tab, tab); }
+      if (!tutte().some((x) => x.id === tab)) { tab = schede[0].id; scrivi(K.tab, tab); }
       renderTabbar();
       mantieniScroll(renderImpostazioni);
     } else if (t.classList.contains('modifica-scheda')) { modificaId = t.dataset.id; confermaEd = -1; vista = 'modifica'; render(); window.scrollTo(0, 0); }
@@ -857,6 +976,8 @@
       confermaEd = -1;
       if (s && s.esercizi[i]) modificaScheda(s, () => s.esercizi.splice(i, 1));
       mantieniScroll(renderModifica);
+    } else if (t.classList.contains('applica-sug')) {
+      applicaSuggerimento(t.closest('article.card'));
     } else if (t.classList.contains('togli-ex')) {
       chiediTogli(t.closest('.riga-ex'));
     } else if (t.classList.contains('annulla-togli')) {
@@ -953,7 +1074,7 @@
         '). Apri l\'app una volta con internet attivo.</p>';
       return;
     }
-    if (!schede.some((s) => s.id === tab)) tab = schede[0].id;
+    if (!tutte().some((s) => s.id === tab)) tab = schede[0].id;
     render();
     mostraTimer();
   }
