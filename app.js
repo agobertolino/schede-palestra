@@ -3,7 +3,7 @@
   // ---------- Archiviazione (localStorage con try/catch ovunque) ----------
   const K = {
     sessioni: 'sp.sessioni', bozza: 'sp.bozza', durata: 'sp.durata',
-    timer: 'sp.timer', tab: 'sp.tab', schede: 'sp.schede', ridotto: 'sp.ridotto', catalogo: 'sp.catalogo', schedeUtente: 'sp.schedeUtente'
+    timer: 'sp.timer', tab: 'sp.tab', schede: 'sp.schede', ridotto: 'sp.ridotto', catalogo: 'sp.catalogo', schedeUtente: 'sp.schedeUtente', tema: 'sp.tema'
   };
   function leggi(k, def) {
     try {
@@ -20,7 +20,7 @@
       return true;
     } catch (e) {
       console.warn('Scrittura non riuscita', k, e);
-      toast('⚠️ Impossibile salvare sul dispositivo');
+      toast('Impossibile salvare sul dispositivo');
       return false;
     }
   }
@@ -81,6 +81,20 @@
   if (!timer || typeof timer.fine !== 'number') timer = null;
 
   let ridotto = leggi(K.ridotto, false) === true;
+
+  // Tema: scuro (predefinito), chiaro o automatico (segue il telefono). Il primo disegno lo imposta index.html.
+  let tema = leggi(K.tema, 'scuro');
+  if (!['scuro', 'chiaro', 'auto'].includes(tema)) tema = 'scuro';
+  function applicaTema() {
+    document.documentElement.dataset.tema = tema;
+    const chiaro = tema === 'chiaro' || (tema === 'auto' && window.matchMedia('(prefers-color-scheme: light)').matches);
+    const m = $('#tc');
+    if (m) m.setAttribute('content', chiaro ? '#f4f4f5' : '#0b0b0c');
+  }
+  const ICONA = {
+    ingranaggio: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+    indietro: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>'
+  };
 
   // Scheda "Giornaliera": sempre disponibile, parte vuota ogni giorno e la costruisci in palestra
   // aggiungendo gli esercizi uno alla volta. I carichi "ultima volta" arrivano da tutto lo storico.
@@ -294,7 +308,7 @@
       const p = sug.piano(j);
       return (p.kg === null || num(v.kg) === p.kg) && num(v.reps) === p.reps;
     });
-    const icona = sug.tipo === 'su' ? '▲' : sug.tipo === 'giu' ? '▼' : '＋';
+    const icona = 'Consiglio';
     return '<p class="suggerimento sug-' + sug.tipo + '"><span class="sug-testo"><b>' + icona + '</b> ' + esc(sug.testo) + '</span>' +
       (!daFare.length ? '' : applicato ? '<span class="sug-ok">✓ applicato</span>'
         : '<button type="button" class="applica-sug">Applica</button>') + '</p>';
@@ -315,13 +329,13 @@
   }
 
   function testoUltima(prev) {
-    if (!prev) return 'Ultima volta: —';
+    if (!prev) return 'Ultima volta: nessuna';
     const parti = prev.serie.map((x) => {
       const kg = num(x.kg), reps = num(x.reps);
       if (kg !== null && reps !== null) return fmtNum(kg) + '×' + reps;
       if (kg !== null) return fmtNum(kg) + ' kg';
       if (reps !== null) return reps + ' reps';
-      return '—';
+      return '-';
     });
     const etichetta = prev.data ? 'Ultima (' + esc(fmtDataBreve(prev.data)) + ')' : 'Ultima volta';
     return etichetta + ': <b>' + esc(parti.join(' · ')) + '</b>';
@@ -353,23 +367,50 @@
     $('#tabbar').innerHTML = tutte().map((s) =>
       '<button type="button" class="tab" data-tab="' + esc(s.id) + '"' +
       (s.id === tab ? ' aria-current="page"' : '') + '>' + esc(s.nome) + '</button>').join('');
+    const att = $('#tabbar [aria-current="page"]');
+    if (att && att.scrollIntoView) { try { att.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) { /* vecchi browser */ } }
+    aggiornaFade();
+  }
+  function aggiornaFade() {
+    const t = $('#tabbar');
+    t.classList.toggle('fade-dx', t.scrollWidth > t.clientWidth + 2 && t.scrollLeft + t.clientWidth < t.scrollWidth - 2);
+  }
+
+  // Cronologia: ogni livello (Impostazioni, Storico, Dettaglio) e' una voce, cosi' lo swipe indietro di iOS torna al livello sopra.
+  const PROFONDITA = { scheda: 0, impostazioni: 1, storico: 2, modifica: 2, dettaglio: 3 };
+  const GENITORE = { impostazioni: 'scheda', storico: 'impostazioni', modifica: 'impostazioni', dettaglio: 'storico' };
+  let profondita = 0;
+  let ignoraPop = false;
+  function sincronizzaStoria() {
+    const t = PROFONDITA[vista] ?? 0;
+    try {
+      if (t > profondita) { for (let d = profondita + 1; d <= t; d++) history.pushState({ d }, ''); profondita = t; }
+      else if (t < profondita) { ignoraPop = true; const delta = t - profondita; profondita = t; history.go(delta); }
+    } catch (e) { profondita = t; }
+  }
+  function indietro() {
+    confermaImp = null; confermaEd = -1;
+    vista = GENITORE[vista] || 'scheda';
+    render();
+    window.scrollTo(0, 0);
   }
 
   function render() {
     const s = corrente();
     if (!s) return;
     tab = s.id;
+    sincronizzaStoria();
     renderTabbar();
-    const btn = $('#btn-vista');
     $('#tabbar').hidden = vista === 'impostazioni' || vista === 'modifica';
-    if (vista === 'scheda') {
-      $('#titolo').textContent = s.nome;
-      btn.textContent = '⚙︎'; btn.setAttribute('aria-label', 'Impostazioni'); btn.classList.add('icona');
-    } else {
-      btn.classList.remove('icona'); btn.removeAttribute('aria-label');
-      $('#titolo').textContent = vista === 'impostazioni' ? 'Impostazioni' : vista === 'modifica' ? 'Modifica scheda' : 'Storico · ' + s.nome;
-      btn.textContent = vista === 'modifica' ? '‹ Impostazioni' : vista === 'impostazioni' ? 'Fine' : 'Allenamento';
-    }
+    document.body.classList.toggle('senza-tab', $('#tabbar').hidden);
+    const inScheda = vista === 'scheda';
+    const btn = $('#btn-vista'), back = $('#btn-indietro-top');
+    btn.hidden = !inScheda;
+    btn.innerHTML = ICONA.ingranaggio;
+    back.hidden = inScheda;
+    back.innerHTML = ICONA.indietro;
+    back.setAttribute('aria-label', vista === 'dettaglio' ? 'Torna alle sedute' : vista === 'storico' || vista === 'modifica' ? 'Torna alle impostazioni' : 'Torna all\'allenamento');
+    $('#titolo').textContent = inScheda ? s.nome : vista === 'impostazioni' ? 'Impostazioni' : vista === 'modifica' ? 'Modifica scheda' : vista === 'dettaglio' ? 'Seduta' : 'Storico · ' + s.nome;
     if (vista === 'scheda') renderScheda(s);
     else if (vista === 'storico') renderStorico(s);
     else if (vista === 'impostazioni') renderImpostazioni();
@@ -380,48 +421,80 @@
   function renderScheda(s) {
     let h = '';
     const lista = elenco(s);
-    // Riga sotto ogni esercizio: aggiungi un esercizio dopo di lui, oppure togli lui. In cima solo "aggiungi".
-    const riga = (dopo, ex) => '<div class="riga-ex" data-key="' + esc(dopo) + '">' +
-      '<button type="button" class="aggiungi-ex" data-dopo="' + esc(dopo) + '">+ Aggiungi esercizio</button>' +
-      (ex ? '<button type="button" class="togli-ex" aria-label="Togli ' + esc(ex.nome) + ' dalla seduta">− Togli esercizio</button>' : '') +
-      '</div>';
-    h += riga('', null);
-    if (!lista.length) {
-      h += '<p class="vuoto">' + (s.libera ? 'Scheda giornaliera vuota: aggiungi gli esercizi man mano che ti alleni.' : 'Nessun esercizio in questa scheda: aggiungine uno.') + '</p>';
-    }
+    // Tra una card e l'altra: aggiungi un esercizio in quel punto. "Togli" sta dentro la card.
+    const riga = (dopo) => '<div class="riga-ex"><button type="button" class="aggiungi-ex" data-dopo="' + esc(dopo) + '">+ Aggiungi esercizio</button></div>';
+    let serieTot = 0, serieFatte = 0, eserciziFatti = 0;
+    let corpo = '';
     lista.forEach(({ key, ex }) => {
       const prev = precedente(s, ex);
       const righe = bozzaDi(s.id).esercizi[key];
       const n = Array.isArray(righe) && righe.length ? righe.length : nSerie(ex);
       const oggiSerie = n !== nSerie(ex) ? ' · oggi ' + n + ' serie' : '';
-      h += '<article class="card" data-key="' + esc(key) + '">' +
-        '<h2>' + esc(ex.nome) + '</h2><span class="schema">' + esc(schema(ex) + oggiSerie) + '</span>' +
-        (ex.nota ? '<p class="nota">' + esc(ex.nota) + '</p>' : '') +
-        '<p class="ultima">' + testoUltima(prev) + '</p>' + htmlSuggerimento(s, ex, key, n) +
-        '<div class="serie-head" aria-hidden="true"><span>#</span><span>kg</span><span>reps</span><span>fatta</span></div>';
+      let fatte = 0, righeHtml = '';
       for (let j = 0; j < n; j++) {
         const v = valore(s, ex, key, j);
+        if (v.fatta) fatte++;
         const lab = esc(ex.nome) + ', serie ' + (j + 1);
-        h += '<div class="serie' + (v.fatta ? ' fatta' : '') + '"' + (v.toccata ? ' data-toccata="1"' : '') + '>' +
+        righeHtml += '<div class="serie' + (v.fatta ? ' fatta' : '') + '"' + (v.toccata ? ' data-toccata="1"' : '') + '>' +
           '<span class="n">' + (j + 1) + '</span>' +
-          '<input type="text" inputmode="decimal" autocomplete="off" name="kg" placeholder="kg" aria-label="' + lab + ', kg" value="' + esc(v.kg) + '">' +
-          '<input type="text" inputmode="decimal" autocomplete="off" name="reps" placeholder="reps" aria-label="' + lab + ', ripetizioni" value="' + esc(v.reps) + '">' +
+          '<input type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" name="kg" placeholder="kg" aria-label="' + lab + ', kg" value="' + esc(v.kg) + '">' +
+          '<input type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" name="reps" placeholder="reps" aria-label="' + lab + ', ripetizioni" value="' + esc(v.reps) + '">' +
           '<button type="button" class="spunta" aria-pressed="' + v.fatta + '" aria-label="' + lab + ', fatta">✓</button>' +
           '</div>';
       }
-      h += '<div class="azioni-serie">' +
+      serieTot += n; serieFatte += fatte;
+      const completo = n > 0 && fatte === n;
+      if (completo) eserciziFatti++;
+      corpo += '<article class="card' + (completo ? ' completo' : '') + '" data-key="' + esc(key) + '">' +
+        '<div class="card-testa"><div><h2>' + esc(ex.nome) + '</h2><span class="schema">' + esc(schema(ex) + oggiSerie) + '</span></div>' +
+        (completo ? '<span class="badge-ok">Fatto</span>' : '') + '</div>' +
+        (ex.nota ? '<p class="nota">' + esc(ex.nota) + '</p>' : '') +
+        '<p class="ultima">' + testoUltima(prev) + '</p>' + htmlSuggerimento(s, ex, key, n) +
+        '<div class="serie-head" aria-hidden="true"><span>#</span><span>kg</span><span>reps</span><span>fatta</span></div>' + righeHtml +
+        '<div class="azioni-serie">' +
+        '<button type="button" class="togli-ex" aria-label="Togli ' + esc(ex.nome) + ' dalla seduta">Togli esercizio</button>' +
         '<button type="button" class="meno-serie"' + (n <= 1 ? ' disabled' : '') + ' aria-label="' + esc(ex.nome) + ', togli una serie">− Serie</button>' +
         '<button type="button" class="piu-serie" aria-label="' + esc(ex.nome) + ', aggiungi una serie">+ Serie</button>' +
-        '</div></article>' + riga(key, ex);
+        '</div></article>' + riga(key);
     });
-    main.innerHTML = h;
+    if (lista.length) {
+      h += '<div class="avanzamento" role="group" aria-label="Avanzamento della seduta"><div class="avanzamento-riga"><span><b id="av-es">' + eserciziFatti + '/' + lista.length + '</b> esercizi</span>' +
+        '<span id="av-se">' + serieFatte + '/' + serieTot + ' serie</span></div>' +
+        '<div class="avanzamento-barra" aria-hidden="true"><i id="av-barra" style="width:' + (serieTot ? Math.round(serieFatte / serieTot * 100) : 0) + '%"></i></div></div>';
+    }
+    h += riga('');
+    if (!lista.length) {
+      h += '<div class="stato-vuoto"><p>' + (s.libera ? 'Scheda giornaliera vuota. Aggiungi gli esercizi man mano che ti alleni.' : 'Nessun esercizio in questa scheda.') +
+        '</p><button type="button" class="aggiungi-ex" data-dopo="">Aggiungi il primo esercizio</button></div>';
+    }
+    main.innerHTML = h + corpo;
+  }
+  // Aggiorna le barre di avanzamento senza ridisegnare la pagina (a ogni spunta).
+  function aggiornaAvanzamento() {
+    const cards = [...main.querySelectorAll('article.card')];
+    if (!cards.length || !$('#av-es')) return;
+    let tot = 0, fatte = 0, es = 0;
+    cards.forEach((c) => {
+      const t = c.querySelectorAll('.serie').length, f = c.querySelectorAll('.serie.fatta').length;
+      tot += t; fatte += f;
+      const completo = t > 0 && f === t;
+      if (completo) es++;
+      c.classList.toggle('completo', completo);
+      const testa = c.querySelector('.card-testa');
+      const badge = testa.querySelector('.badge-ok');
+      if (completo && !badge) testa.insertAdjacentHTML('beforeend', '<span class="badge-ok">Fatto</span>');
+      else if (!completo && badge) badge.remove();
+    });
+    $('#av-es').textContent = es + '/' + cards.length;
+    $('#av-se').textContent = fatte + '/' + tot + ' serie';
+    $('#av-barra').style.width = (tot ? Math.round(fatte / tot * 100) : 0) + '%';
   }
 
   function renderStorico(s) {
     const lista = ordinate().filter((x) => x.scheda === s.id);
-    let h = '<button type="button" id="btn-imp-torna" class="btn-sec">‹ Impostazioni</button><h2 class="sez">Sedute salvate</h2>';
+    let h = '<h2 class="sez">Sedute salvate</h2>';
     if (!lista.length) {
-      h += '<p class="vuoto">Nessuna seduta salvata per questa scheda.</p>';
+      h += '<div class="stato-vuoto"><p>Nessuna seduta salvata per questa scheda. Si salva da sola appena spunti una serie.</p></div>';
     } else {
       h += '<ul class="lista">' + lista.map((x) => {
         const es = (x.esercizi || []).length;
@@ -433,9 +506,9 @@
     }
     h += '<section class="dati"><h2 class="sez">Esporta e importa</h2>' +
       '<p class="sub">Tutte le schede · ' + sessioni.length + ' sedute in totale</p>' +
-      '<button type="button" id="btn-csv" class="btn-sec piena">📋 Copia storico in CSV</button>' +
-      '<button type="button" id="btn-json" class="btn-sec piena">⬇️ Scarica JSON completo</button>' +
-      '<button type="button" id="btn-import" class="btn-sec piena">⬆️ Importa JSON (ripristina)</button>' +
+      '<button type="button" id="btn-csv" class="btn-sec piena">Copia storico in CSV</button>' +
+      '<button type="button" id="btn-json" class="btn-sec piena">Scarica JSON completo</button>' +
+      '<button type="button" id="btn-import" class="btn-sec piena">Importa JSON (ripristina)</button>' +
       '</section>';
     main.innerHTML = h;
   }
@@ -443,12 +516,11 @@
   function renderDettaglio() {
     const x = sessioni.find((y) => y.id === dettaglioId);
     if (!x) { vista = 'storico'; render(); return; }
-    let h = '<button type="button" id="btn-indietro" class="btn-sec">‹ Tutte le sedute</button>' +
-      '<h2 class="sez">' + esc(fmtData(x.data)) + '</h2><p class="sub">' + esc(x.nomeScheda || x.scheda) + '</p>';
+    let h = '<h2 class="sez">' + esc(fmtData(x.data)) + '</h2><p class="sub">' + esc(x.nomeScheda || x.scheda) + '</p>';
     (x.esercizi || []).forEach((e) => {
       h += '<article class="card"><h2>' + esc(e.nome) + '</h2><table class="tab-serie"><thead><tr><th>Serie</th><th>kg</th><th>Reps</th></tr></thead><tbody>' +
-        (e.serie || []).map((r) => '<tr><td>' + esc(r.n) + '</td><td>' + (r.kg === null || r.kg === undefined ? '—' : esc(fmtNum(r.kg))) +
-          '</td><td>' + (r.reps === null || r.reps === undefined ? '—' : esc(fmtNum(r.reps))) + '</td></tr>').join('') +
+        (e.serie || []).map((r) => '<tr><td>' + esc(r.n) + '</td><td>' + (r.kg === null || r.kg === undefined ? '-' : esc(fmtNum(r.kg))) +
+          '</td><td>' + (r.reps === null || r.reps === undefined ? '-' : esc(fmtNum(r.reps))) + '</td></tr>').join('') +
         '</tbody></table></article>';
     });
     main.innerHTML = h;
@@ -503,21 +575,23 @@
     window.scrollTo(0, y);
   }
 
-  // "Togli esercizio" chiede sempre conferma: la riga si trasforma in Annulla / Sì, togli.
+  // "Togli esercizio" chiede sempre conferma: la riga dei pulsanti della card si trasforma in Annulla / Sì, togli.
   let rigaOriginale = null;
   function chiediTogli(riga) {
+    const card = riga.closest('article.card');
     const s = corrente();
-    const v = voce(s, riga.dataset.key);
+    const v = voce(s, card.dataset.key);
     if (!v) return;
     ripristinaRiga();
-    const card = [...main.querySelectorAll('article.card')].find((c) => c.dataset.key === riga.dataset.key);
-    const fatte = card ? card.querySelectorAll('.serie.fatta').length : 0;
+    const fatte = card.querySelectorAll('.serie.fatta').length;
     rigaOriginale = { riga, html: riga.innerHTML };
     riga.classList.add('conferma');
     riga.innerHTML = '<p class="conferma-testo" role="alert">Togliere «' + esc(v.ex.nome) + '» dalla seduta di oggi?' +
       (fatte ? (fatte === 1 ? ' La serie già fatta verrà tolta dalla seduta.' : ' Le ' + fatte + ' serie già fatte verranno tolte dalla seduta.') : '') + '</p>' +
       '<button type="button" class="annulla-togli">Annulla</button>' +
       '<button type="button" class="conferma-togli">Sì, togli</button>';
+    const ann = riga.querySelector('.annulla-togli');
+    if (ann) ann.focus({ preventScroll: true });
   }
   function ripristinaRiga() {
     if (!rigaOriginale) return;
@@ -599,12 +673,13 @@
     const ris = cerca(q, dlgGruppo).slice(0, 60);
     let h = '';
     if (q.trim() && !trova(q)) {
-      h += '<li><button type="button" class="ris ris-nuovo" data-nome="' + esc(q.trim()) + '">＋ Crea “' + esc(q.trim()) + '”</button></li>';
+      h += '<li><button type="button" class="ris ris-nuovo" data-nome="' + esc(q.trim()) + '">Crea “' + esc(q.trim()) + '”</button></li>';
     }
     h += ris.map((c) => '<li><button type="button" class="ris" data-nome="' + esc(c.nome) + '"><b>' + esc(c.nome) + '</b>' +
       '<small>' + esc([c.gruppo, c.attrezzo].filter(Boolean).join(' · ')) + '</small></button></li>').join('');
     if (!h) h = '<li class="vuoto">Nessun esercizio trovato</li>';
     $('#dlg-risultati').innerHTML = h;
+    $('#dlg-conteggio').textContent = ris.length === 1 ? '1 risultato' : ris.length + ' risultati';
   }
   function apriAggiungi(dopo, modo) {
     dlgDopo = dopo;
@@ -614,7 +689,18 @@
     renderGruppi();
     renderRisultati();
     if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+    adattaDialogo();
+    $('#dlg-nome').focus();
   }
+  // Con la tastiera aperta lo schermo visibile si riduce: il dialogo si adatta cosi' la lista resta usabile.
+  function adattaDialogo() {
+    const vv = window.visualViewport;
+    const h = vv ? Math.floor(vv.height * 0.92) : null;
+    dlg.style.maxHeight = h ? h + 'px' : '';
+    const f = $('#dlg-form');
+    if (f) f.style.maxHeight = h ? (h - 38) + 'px' : '';
+  }
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', () => { if (dlg.open) adattaDialogo(); });
   function chiudiAggiungi() {
     if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open');
   }
@@ -684,7 +770,7 @@
       sessioni.push(seduta);
       b.sedutaId = seduta.id;
     }
-    if (!(scrivi(K.sessioni, sessioni) && scrivi(K.bozza, bozza))) toast('⚠️ Salvataggio non riuscito');
+    if (!(scrivi(K.sessioni, sessioni) && scrivi(K.bozza, bozza))) toast('Salvataggio non riuscito');
   }
 
   // ---------- Timer di recupero ----------
@@ -692,6 +778,43 @@
   const elTempo = $('#timer-tempo');
   const elBarra = $('#timer-barra');
   let tick = null;
+  const riduciMovimento = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+
+  // Schermo acceso mentre il recupero corre (se il telefono lo permette): altrimenti il conto alla rovescia si ferma.
+  let wake = null;
+  async function tieniAcceso(si) {
+    try {
+      if (si && !wake && 'wakeLock' in navigator && !document.hidden) {
+        wake = await navigator.wakeLock.request('screen');
+        wake.addEventListener('release', () => { wake = null; });
+      } else if (!si && wake) { const w = wake; wake = null; await w.release(); }
+    } catch (e) { wake = null; /* non supportato o negato */ }
+  }
+  // Suono di fine recupero: il contesto audio si sblocca col primo tocco su una spunta.
+  let audio = null;
+  function sblocca() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!audio) audio = new AC();
+      if (audio.state === 'suspended') audio.resume();
+    } catch (e) { audio = null; }
+  }
+  function suona() {
+    try {
+      if (!audio) return;
+      [0, 0.28, 0.56].forEach((t, i) => {
+        const o = audio.createOscillator(), g = audio.createGain();
+        o.type = 'sine'; o.frequency.value = i === 2 ? 1175 : 880;
+        const t0 = audio.currentTime + t;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.35, t0 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22);
+        o.connect(g); g.connect(audio.destination);
+        o.start(t0); o.stop(t0 + 0.25);
+      });
+    } catch (e) { /* audio non disponibile */ }
+  }
 
   function avviaTimer() {
     const ora = Date.now();
@@ -712,11 +835,14 @@
       elTimer.classList.remove('finito');
       document.body.classList.remove('con-timer');
       clearInterval(tick); tick = null;
+      tieniAcceso(false);
       return;
     }
     const eraNascosto = elTimer.hidden;
     elTimer.hidden = false;
     elTimer.classList.toggle('ridotto', ridotto);
+    if (ridotto) { elTimer.setAttribute('role', 'button'); elTimer.tabIndex = 0; elTimer.setAttribute('aria-label', 'Timer di recupero, tocca per aprire'); }
+    else { elTimer.removeAttribute('role'); elTimer.removeAttribute('tabindex'); elTimer.removeAttribute('aria-label'); }
     document.body.classList.add('con-timer');
     elTimer.classList.remove('finito');
     if (eraNascosto) { elTimer.classList.remove('entra'); void elTimer.offsetWidth; elTimer.classList.add('entra'); }
@@ -728,6 +854,7 @@
     elBarra.style.animation = 'scarica ' + tot + 's linear ' + (-trascorso) + 's forwards';
     aggiornaTimer();
     if (!tick && timer && timer.fine > Date.now()) tick = setInterval(aggiornaTimer, 250);
+    tieniAcceso(timer.fine > Date.now());
   }
   function aggiornaTimer() {
     if (!timer) return;
@@ -735,15 +862,20 @@
     if (resto > 0) {
       elTempo.textContent = mmss(resto);
       elTimer.classList.remove('finito');
+      if (riduciMovimento.matches) elBarra.style.transform = 'scaleX(' + Math.max(0, Math.min(1, (timer.fine - Date.now()) / Math.max(1, timer.fine - timer.inizio))) + ')';
       return;
     }
     clearInterval(tick); tick = null;
+    tieniAcceso(false);
     elTempo.textContent = ridotto ? '✓' : 'Si riparte!';
     if (!elTimer.classList.contains('finito')) elTimer.classList.add('finito');
     if (!timer.avvisato) {
       timer.avvisato = true;
       scrivi(K.timer, timer);
       try { if (navigator.vibrate) navigator.vibrate([400, 150, 400, 150, 400]); } catch (e) { /* non supportata */ }
+      suona();
+      $('#timer-annuncio').textContent = 'Recupero finito, si riparte.';
+      setTimeout(() => { $('#timer-annuncio').textContent = ''; }, 3000);
     }
   }
 
@@ -751,7 +883,10 @@
   const MAX_SCHEDE = 7;
   function renderImpostazioni() {
     const n = schede.length;
-    let h = '<h2 class="sez">Storico</h2>' +
+    const opz = (v, txt) => '<button type="button" data-tema="' + v + '" aria-pressed="' + (tema === v) + '">' + txt + '</button>';
+    let h = '<h2 class="sez">Aspetto</h2><div class="segmentato" role="group" aria-label="Tema">' +
+      opz('scuro', 'Scuro') + opz('chiaro', 'Chiaro') + opz('auto', 'Automatico') + '</div>' +
+      '<h2 class="sez">Storico</h2>' +
       '<button type="button" id="btn-apri-storico" class="voce"><span><strong>Storico sedute</strong>' +
       '<small>' + sessioni.length + (sessioni.length === 1 ? ' seduta salvata' : ' sedute salvate') + ' · esporta e importa</small></span><span class="freccia" aria-hidden="true">›</span></button>' +
       '<h2 class="sez">Schede preimpostate</h2><p class="sub">Quante schede usare (da 1 a ' + MAX_SCHEDE + ') e come sono fatte.</p>' +
@@ -772,7 +907,7 @@
       h += '<div class="conferma-box" role="alert"><p class="conferma-testo">Ripristinare le schede originali? Le tue modifiche alle schede andranno perse. Lo storico resta salvato.</p>' +
         '<button type="button" id="imp-annulla">Annulla</button><button type="button" id="imp-ok" class="rosso">Sì, ripristina</button></div>';
     } else {
-      h += '<button type="button" id="sch-reset" class="btn-sec piena">↺ Ripristina schede originali</button>';
+      h += '<button type="button" id="sch-reset" class="btn-sec piena">Ripristina schede originali</button>';
     }
     main.innerHTML = h;
   }
@@ -942,8 +1077,11 @@
       riga.classList.toggle('fatta', fatta);
       t.setAttribute('aria-pressed', String(fatta));
       salvaBozzaCard(t.closest('article.card'));
-      if (fatta) avviaTimer();
-    } else if (t.id === 'btn-imp-torna') { vista = 'impostazioni'; render(); window.scrollTo(0, 0); }
+      if (fatta) { sblocca(); avviaTimer(); }
+      aggiornaAvanzamento();
+    } else if (t.dataset.tema) {
+      tema = t.dataset.tema; scrivi(K.tema, tema); applicaTema(); mantieniScroll(renderImpostazioni);
+    } else if (t.id === 'btn-riprova') { location.reload(); }
     else if (t.id === 'btn-apri-storico') { vista = 'storico'; render(); window.scrollTo(0, 0); }
     else if (t.id === 'sch-piu') {
       if (schede.length < MAX_SCHEDE) { schede.push(nuovaScheda()); salvaSchede(); confermaImp = null; mantieniScroll(renderImpostazioni); }
@@ -979,17 +1117,16 @@
     } else if (t.classList.contains('applica-sug')) {
       applicaSuggerimento(t.closest('article.card'));
     } else if (t.classList.contains('togli-ex')) {
-      chiediTogli(t.closest('.riga-ex'));
+      chiediTogli(t.closest('.azioni-serie'));
     } else if (t.classList.contains('annulla-togli')) {
       ripristinaRiga();
     } else if (t.classList.contains('conferma-togli')) {
-      togliEsercizio(t.closest('.riga-ex').dataset.key);
+      togliEsercizio(t.closest('article.card').dataset.key);
     } else if (t.classList.contains('aggiungi-ex')) {
       apriAggiungi(t.dataset.dopo);
     } else if (t.classList.contains('piu-serie') || t.classList.contains('meno-serie')) {
       cambiaSerie(t.closest('article.card'), t.classList.contains('piu-serie') ? 1 : -1);
     } else if (t.classList.contains('voce')) { dettaglioId = t.dataset.id; vista = 'dettaglio'; render(); window.scrollTo(0, 0); }
-    else if (t.id === 'btn-indietro') { vista = 'storico'; render(); }
     else if (t.id === 'btn-csv') copiaCsv();
     else if (t.id === 'btn-json') scaricaJson();
     else if (t.id === 'btn-import') $('#file-import').click();
@@ -1010,11 +1147,25 @@
   });
   $('#btn-vista').addEventListener('click', () => {
     confermaImp = null; confermaEd = -1;
-    if (vista === 'scheda') vista = 'impostazioni';
-    else if (vista === 'modifica') vista = 'impostazioni';
-    else vista = 'scheda';
+    vista = 'impostazioni';
     render();
     window.scrollTo(0, 0);
+  });
+  $('#btn-indietro-top').addEventListener('click', indietro);
+  // Swipe indietro di iOS o tasto indietro: si sale di un livello invece di uscire dall'app.
+  window.addEventListener('popstate', (e) => {
+    if (ignoraPop) { ignoraPop = false; return; }
+    const d = e.state && typeof e.state.d === 'number' ? e.state.d : 0;
+    profondita = d;
+    while ((PROFONDITA[vista] ?? 0) > d) vista = GENITORE[vista] || 'scheda';
+    confermaImp = null; confermaEd = -1;
+    render();
+    window.scrollTo(0, 0);
+  });
+  $('#tabbar').addEventListener('scroll', aggiornaFade, { passive: true });
+  window.addEventListener('resize', aggiornaFade);
+  elTimer.addEventListener('keydown', (e) => {
+    if (ridotto && e.target === elTimer && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); elTimer.click(); }
   });
   elTimer.addEventListener('click', (e) => {
     if (e.target.closest('a')) return; // link a Musica
@@ -1059,8 +1210,13 @@
   $('#dlg-form').addEventListener('submit', (e) => { e.preventDefault(); confermaAggiungi(); });
   $('#dlg-annulla').addEventListener('click', chiudiAggiungi);
   document.addEventListener('visibilitychange', () => { if (!document.hidden && timer) mostraTimer(); });
+  if (window.matchMedia) {
+    const mq = window.matchMedia('(prefers-color-scheme: light)');
+    if (mq.addEventListener) mq.addEventListener('change', () => { if (tema === 'auto') applicaTema(); });
+  }
 
   // ---------- Avvio ----------
+  applicaTema();
   async function avvio() {
     try {
       const d = await caricaSchede();
@@ -1070,11 +1226,13 @@
       try { validaSchede({ schede: u }); if (u.length <= 7) schede = u; } catch (e) { /* si usano quelle originali */ }
       await caricaCatalogo();
     } catch (e) {
-      main.innerHTML = '<p class="errore">Impossibile caricare le schede (' + esc(e.message) +
-        '). Apri l\'app una volta con internet attivo.</p>';
+      main.innerHTML = '<div class="errore" role="alert"><p>Impossibile caricare le schede (' + esc(e.message) +
+        '). Apri l\'app una volta con internet attivo.</p><button type="button" id="btn-riprova" class="btn-sec">Riprova</button></div>';
+      $('#btn-vista').hidden = true;
       return;
     }
     if (!tutte().some((s) => s.id === tab)) tab = schede[0].id;
+    try { history.replaceState({ d: 0 }, ''); } catch (e) { /* cronologia non disponibile */ }
     render();
     mostraTimer();
   }
