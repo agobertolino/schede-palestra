@@ -1,8 +1,12 @@
 // Service worker: cache-first (stale-while-revalidate).
 // Risponde subito dalla cache (funziona offline) e aggiorna la cache in background,
 // così le modifiche a schede.json o al codice arrivano alla riapertura successiva.
-const CACHE = 'schede-palestra-v11';
-const FILES = ['./', 'index.html', 'app.js', 'style.css', 'schede.json', 'catalogo.json', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
+const CACHE = 'schede-palestra-v12';
+const FILES = [
+  './', 'index.html', 'app.js', 'style.css', 'schede.json', 'catalogo.json', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png',
+  'fonts/barlow-latin-400-normal.woff2', 'fonts/barlow-latin-500-normal.woff2', 'fonts/barlow-latin-600-normal.woff2',
+  'fonts/barlow-condensed-latin-600-normal.woff2', 'fonts/barlow-condensed-latin-700-normal.woff2'
+];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));

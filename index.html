@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" id="tc" content="#0b0b0c">
+<meta name="theme-color" id="tc" content="#121110">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -12,57 +12,85 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preload" href="fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 <script>
 /* Applica il tema prima del primo disegno, per evitare il lampo di colore sbagliato. */
 (function () {
   var t = 'scuro';
   try { var v = JSON.parse(localStorage.getItem('sp.tema')); if (v === 'chiaro' || v === 'auto' || v === 'scuro') t = v; } catch (e) { /* si usa il tema scuro */ }
-  document.documentElement.dataset.tema = t;
   var chiaro = t === 'chiaro' || (t === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches);
-  document.getElementById('tc').setAttribute('content', chiaro ? '#f4f4f5' : '#0b0b0c');
+  document.documentElement.dataset.tema = t;
+  document.documentElement.dataset.luce = chiaro ? 'chiaro' : 'scuro';
+  document.getElementById('tc').setAttribute('content', chiaro ? '#f2efe8' : '#121110');
 })();
 </script>
 </head>
 <body>
 <header class="top">
-  <button id="btn-indietro-top" class="btn-icona" type="button" aria-label="Indietro" hidden></button>
-  <h1 id="titolo">Schede</h1>
-  <button id="btn-vista" class="btn-icona" type="button" aria-label="Impostazioni"></button>
-</header>
-<main id="main"><p class="vuoto" role="status">Caricamento…</p></main>
-<div id="timer" class="timer" hidden>
-  <div class="timer-barra" id="timer-barra" aria-hidden="true"></div>
-  <button id="timer-tempo" class="timer-tempo" type="button" aria-label="Tempo di recupero">2:00</button>
-  <div class="timer-durate" role="group" aria-label="Durata recupero">
-    <button type="button" data-durata="90">1:30</button>
-    <button type="button" data-durata="120">2:00</button>
-    <button type="button" data-durata="180">3:00</button>
+  <div class="top-riga">
+    <button id="btn-indietro" class="btn-ico" type="button" aria-label="Indietro" hidden>
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <h1 id="titolo" class="sr-only">Schede palestra</h1>
+    <nav id="schede-nav" class="schede-nav" aria-label="Schede"></nav>
+    <button id="btn-impostazioni" class="btn-ico" type="button" aria-label="Impostazioni">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><rect x="14" y="4.5" width="5" height="5"/><rect x="5" y="14.5" width="5" height="5"/></svg>
+    </button>
   </div>
-  <a class="timer-musica" href="music://" aria-label="Apri Musica"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg></a>
-  <button id="timer-riduci" class="timer-riduci" type="button" aria-label="Nascondi timer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-  <button id="timer-chiudi" class="timer-chiudi" type="button" aria-label="Chiudi timer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-</div>
+</header>
+
+<main id="main"><p class="stato" role="status">Caricamento…</p></main>
+
+<section id="timer" class="dock" aria-label="Recupero" hidden>
+  <div class="dock-barra" aria-hidden="true"><i id="timer-barra"></i></div>
+  <div class="dock-riga">
+    <p class="dock-tempo"><span id="timer-eti" class="dock-eti">Recupero</span><strong id="timer-tempo">2:00</strong></p>
+    <button id="timer-durata" class="dock-durata solo-corsa" type="button"><span>Durata</span><b>2:00</b></button>
+    <a class="btn-ico" href="music://" aria-label="Apri Musica">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17V5l11-2v12"/><rect x="4" y="15" width="5" height="5"/><rect x="15" y="13" width="5" height="5"/></svg>
+    </a>
+    <button id="timer-riduci" class="btn-ico solo-corsa" type="button" aria-label="Nascondi il recupero">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>
+    </button>
+    <button id="timer-salta" class="btn btn-tonale" type="button">Salta</button>
+  </div>
+</section>
+<button id="timer-pillola" class="pillola" type="button" hidden><span class="sr-only">Recupero, tocca per aprirlo: </span><span id="timer-pillola-tempo">2:00</span></button>
 <p id="timer-annuncio" class="sr-only" role="status"></p>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-<dialog id="dlg-ex" class="dlg" aria-labelledby="dlg-titolo">
-  <form id="dlg-form" method="dialog">
-    <h2 id="dlg-titolo">Aggiungi esercizio</h2>
-    <input id="dlg-nome" type="search" autocomplete="off" autocapitalize="sentences" enterkeyhint="search" placeholder="Cerca o scrivi un esercizio" aria-label="Nome esercizio">
-    <div id="dlg-gruppi" class="chips" role="group" aria-label="Gruppo muscolare"></div>
-    <ul id="dlg-risultati" class="risultati" aria-label="Risultati della ricerca"></ul>
-    <p id="dlg-conteggio" class="sr-only" role="status"></p>
-    <div class="dlg-riga">
-      <label>Serie<input id="dlg-serie" type="number" inputmode="numeric" enterkeyhint="next" min="1" max="12" placeholder="3"></label>
-      <label>Reps<input id="dlg-reps" type="text" inputmode="text" enterkeyhint="done" placeholder="8-12"></label>
+
+<dialog id="dlg-ex" class="foglio" aria-labelledby="dlg-titolo">
+  <form id="dlg-form" method="dialog" novalidate>
+    <div class="foglio-testa">
+      <h2 id="dlg-titolo">Aggiungi esercizio</h2>
+      <button type="button" id="dlg-annulla" class="btn-ico" aria-label="Chiudi">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
     </div>
-    <div class="dlg-azioni">
-      <button type="button" id="dlg-annulla" class="btn-sec">Annulla</button>
-      <button type="submit" class="btn-pri-inline">Aggiungi</button>
+    <div class="campo">
+      <label for="dlg-nome">Esercizio</label>
+      <input id="dlg-nome" type="search" autocomplete="off" autocapitalize="sentences" enterkeyhint="search" placeholder="Cerca o scrivi il nome" aria-describedby="dlg-errore">
+      <p id="dlg-errore" class="errore-campo" role="alert" hidden>Scrivi o scegli un esercizio.</p>
+    </div>
+    <div id="dlg-gruppi" class="chips" role="group" aria-label="Gruppo muscolare"></div>
+    <ul id="dlg-risultati" class="risultati" aria-label="Esercizi trovati"></ul>
+    <p id="dlg-conteggio" class="sr-only" role="status"></p>
+    <div class="foglio-piede">
+      <div class="campo">
+        <label for="dlg-serie">Serie</label>
+        <input id="dlg-serie" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="next" maxlength="2" placeholder="3">
+      </div>
+      <div class="campo">
+        <label for="dlg-reps">Reps</label>
+        <input id="dlg-reps" type="text" autocomplete="off" enterkeyhint="done" placeholder="8-12">
+      </div>
+      <button type="submit" class="btn btn-pri">Aggiungi</button>
     </div>
   </form>
 </dialog>
-<nav id="tabbar" class="tabbar" aria-label="Schede"></nav>
+
 <input type="file" id="file-import" accept="application/json,.json" hidden>
 <script src="app.js" defer></script>
 </body>
